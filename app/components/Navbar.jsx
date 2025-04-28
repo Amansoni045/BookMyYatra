@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 
 const App = () => {
   const navLinks = [
@@ -23,29 +25,25 @@ const App = () => {
   return (
     <nav
       className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 transition-all duration-500 z-50 ${
-        scrolled ? "bg-white/80 shadow-md text-gray-700" : "bg-indigo-500 text-white py-4"
+        scrolled ? "bg-white/80 shadow-md text-gray-700" : "text-white py-4"
       }`}
     >
-      <a href="/" className="flex items-center">
+      <Link href="/" className="flex items-center">
         <img
           src="/Assets/logo.png"
           alt="Logo"
           className={`h-16 ${scrolled ? "invert opacity-80" : ""}`}
         />
-      </a>
+      </Link>
 
       <div className="hidden md:flex flex-grow items-center justify-center gap-8">
         {navLinks.map((link, index) => (
-          <a
-            key={index}
-            href={link.url}
-            className={`group ${scrolled ? "text-gray-700" : "text-white"}`}
-          >
+          <Link key={index} href={link.url} className={`group ${scrolled ? "text-gray-700" : "text-white"}`}>
             {link.label}
             <div
               className={`${scrolled ? "bg-gray-700" : "bg-white"} h-0.5 w-0 group-hover:w-full transition-all`}
             />
-          </a>
+          </Link>
         ))}
       </div>
 
@@ -84,14 +82,9 @@ const App = () => {
         </button>
 
         {navLinks.map((link, index) => (
-          <a
-            key={index}
-            href={link.url}
-            className="text-gray-800"
-            onClick={() => setMenuOpen(false)}
-          >
+          <Link key={index} href={link.url} className="text-gray-800" onClick={() => setMenuOpen(false)}>
             {link.label}
-          </a>
+          </Link>
         ))}
 
         <button className="bg-black text-white px-8 py-2.5 rounded-full hover:bg-gray-800 transition-all duration-500 hover:scale-105">
@@ -103,4 +96,3 @@ const App = () => {
 };
 
 export default App;
-
