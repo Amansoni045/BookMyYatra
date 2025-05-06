@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
-
+import {useRouter} from "next/navigation";
 
 const Navbar = () => {
   const navLinks = [
@@ -13,6 +13,7 @@ const Navbar = () => {
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -68,7 +69,6 @@ const Navbar = () => {
         </SignedIn>
       </div>
 
-      {/* Mobile Menu Toggle */}
       <div className="flex items-center md:hidden">
         <svg
           onClick={() => setMenuOpen(!menuOpen)}
