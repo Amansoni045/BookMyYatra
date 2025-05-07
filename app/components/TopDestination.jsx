@@ -64,13 +64,13 @@ export default function TopDestination() {
                   priority
                 />
                 {hotel.tag && (
-                  <span className="absolute top-2 left-2 bg-white text-sm font-semibold px-2 py-1 rounded-full shadow">
+                  <span className="absolute top-2 left-2 bg-white text-sm font-semibold px-2 py-1 rounded-full shadow text-gray-800">
                     {hotel.tag}
                   </span>
                 )}
               </div>
               <div className="mt-4">
-                <h3 className="text-lg font-semibold">{hotel.name}</h3>
+                <h3 className="text-lg font-semibold text-black">{hotel.name}</h3>
                 <p className="text-sm text-gray-500 flex items-center">
                   <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                   {hotel.location}

@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
-import {useRouter} from "next/navigation";
 
 const Navbar = () => {
   const navLinks = [
@@ -13,12 +12,11 @@ const Navbar = () => {
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
-    const handleScroll = () => {
+    function handleScroll() {
       setScrolled(window.scrollY > 10);
-    };
+    }
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -50,7 +48,6 @@ const Navbar = () => {
         ))}
       </div>
 
-      {/* Desktop Auth Buttons */}
       <div className="hidden md:flex items-center gap-4">
         <SignedOut>
           <SignInButton mode="modal">
@@ -84,7 +81,6 @@ const Navbar = () => {
         </svg>
       </div>
 
-      {/* Mobile Drawer */}
       <div
         className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col items-center justify-center gap-6 font-medium text-gray-800 transition-all ${
           menuOpen ? "translate-x-0" : "-translate-x-full"
