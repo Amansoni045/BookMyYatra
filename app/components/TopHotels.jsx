@@ -1,58 +1,41 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Star, MapPin } from 'lucide-react';
 
-const destinations = [
-  {
-    id: 1,
-    name: 'Urbanza Suites',
-    location: 'Main Road 123 Street, 23 Colony',
-    image: '/Assets/hotel1.png',
-    rating: 4.5,
-    price: 399,
-    tag: 'Best Seller',
-  },
-  {
-    id: 2,
-    name: 'Luxe Stay Inn',
-    location: 'Beach Road, Goa',
-    image: '/Assets/hotel2.png',
-    rating: 4.7,
-    price: 299,
-    tag: 'Popular',
-  },
-  {
-    id: 3,
-    name: 'Haven Residency',
-    location: 'Lakeview Boulevard',
-    image: '/Assets/hotel3.png',
-    rating: 4.3,
-    price: 349,
-    tag: '',
-  },
-  {
-    id: 4,
-    name: 'Royal Heritage Hotel',
-    location: 'Rajpath, Jaipur',
-    image: '/Assets/hotel4.png',
-    rating: 4.6,
-    price: 429,
-    tag: 'Trending',
-  },
-];
+export default function TopHotels() {
+  const [hotels, setHotels] = useState([]);
 
-export default function TopDestination() {
+  useEffect(() => {
+    const fetchHotels = async () => {
+      try {
+        const res = await fetch('/api/hotels');
+        const data = await res.json();
+
+        const topRated = data
+          .sort((a, b) => b.rating - a.rating) 
+          .slice(0, 4); 
+
+        setHotels(topRated);
+      } catch (error) {
+        console.error('Error fetching hotels:', error);
+      }
+    };
+
+    fetchHotels();
+  }, []);
+
   return (
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Destinations</h2>
+        <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Hotels</h2>
         <p className="text-gray-600 mb-8">
           Explore our most sought-after stays that blend comfort and class at the best locations.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {destinations.map((hotel) => (
+          {hotels.map((hotel) => (
             <div key={hotel.id} className="bg-white rounded-xl shadow p-4 text-left">
               <div className="relative">
                 <Image
@@ -94,7 +77,7 @@ export default function TopDestination() {
         </div>
 
         <button className="mt-10 px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 hover:bg-gray-100 font-medium">
-          View All Destinations
+          View All Hotels
         </button>
       </div>
     </section>
