@@ -1,10 +1,9 @@
-import React from 'react'
-const page = () => {
-  return (
-    <div className='w-full min-h-screen'>
-      This is hotels
-    </div>
-  )
-}
+import AllRooms from "../components/AllRooms";
 
-export default page
+export default function page() {
+  return (
+    <div className="bg-white text-black min-h-screen">
+      <AllRooms />
+    </div>
+  );
+}
