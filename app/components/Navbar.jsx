@@ -2,9 +2,13 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
 
 const Navbar = () => {
+  const pathname = usePathname();
+  const isHotelsPage = pathname.startsWith("/hotels");
+
   const navLinks = [
     { label: "Home", url: "/" },
     { label: "Hotels", url: "/hotels" },
@@ -14,34 +18,46 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    function handleScroll() {
-      setScrolled(window.scrollY > 10);
+    if (!isHotelsPage) {
+      const handleScroll = () => {
+        setScrolled(window.scrollY > 10);
+      };
+      window.addEventListener("scroll", handleScroll);
+      return () => window.removeEventListener("scroll", handleScroll);
     }
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHotelsPage]);
+
+  const navStyle = isHotelsPage || scrolled
+    ? "bg-white/80 shadow-md text-gray-700"
+    : "text-white py-4";
+
+  const logoStyle = isHotelsPage || scrolled ? "invert opacity-80" : "";
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 transition-all duration-500 z-50 ${
-        scrolled ? "bg-white/80 shadow-md text-gray-700" : "text-white py-4"
-      }`}
+      className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 transition-all duration-500 z-50 ${navStyle}`}
     >
       <Link href="/" className="flex items-center">
         <img
           src="/Assets/logo.png"
           alt="Logo"
-          className={`h-16 ${scrolled ? "invert opacity-80" : ""}`}
+          className={`h-16 ${logoStyle}`}
         />
       </Link>
 
       <div className="hidden md:flex flex-grow items-center justify-center gap-8">
         {navLinks.map((link, index) => (
-          <Link key={index} href={link.url} className={`group ${scrolled ? "text-gray-700" : "text-white"}`}>
+          <Link
+            key={index}
+            href={link.url}
+            className={`group ${
+              isHotelsPage || scrolled ? "text-gray-700" : "text-white"
+            }`}
+          >
             {link.label}
             <div
               className={`${
-                scrolled ? "bg-gray-700" : "bg-white"
+                isHotelsPage || scrolled ? "bg-gray-700" : "bg-white"
               } h-0.5 w-0 group-hover:w-full transition-all`}
             />
           </Link>
@@ -69,7 +85,7 @@ const Navbar = () => {
       <div className="flex items-center md:hidden">
         <svg
           onClick={() => setMenuOpen(!menuOpen)}
-          className={`h-6 w-6 cursor-pointer ${scrolled ? "invert" : ""}`}
+          className={`h-6 w-6 cursor-pointer ${logoStyle}`}
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -90,14 +106,25 @@ const Navbar = () => {
           className="absolute top-4 right-4"
           onClick={() => setMenuOpen(false)}
         >
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+          <svg
+            className="h-6 w-6"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
             <line x1="18" y1="6" x2="6" y2="18" />
             <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
 
         {navLinks.map((link, index) => (
-          <Link key={index} href={link.url} className="text-gray-800" onClick={() => setMenuOpen(false)}>
+          <Link
+            key={index}
+            href={link.url}
+            className="text-gray-800"
+            onClick={() => setMenuOpen(false)}
+          >
             {link.label}
           </Link>
         ))}
