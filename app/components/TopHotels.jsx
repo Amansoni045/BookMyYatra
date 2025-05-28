@@ -3,9 +3,11 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { Star, MapPin } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function TopHotels() {
   const [hotels, setHotels] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -14,8 +16,8 @@ export default function TopHotels() {
         const data = await res.json();
 
         const topRated = data
-          .sort((a, b) => b.rating - a.rating) 
-          .slice(0, 4); 
+          .sort((a, b) => b.rating - a.rating)
+          .slice(0, 4);
 
         setHotels(topRated);
       } catch (error) {
@@ -30,9 +32,7 @@ export default function TopHotels() {
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Hotels</h2>
-        <p className="text-gray-600 mb-8">
-          Explore our most sought-after stays that blend comfort and class at the best locations.
-        </p>
+        <p className="text-gray-600 mb-8">Explore our most sought-after stays that blend comfort and class at the best locations.</p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {hotels.map((hotel) => (
@@ -68,7 +68,10 @@ export default function TopHotels() {
                     <span className="text-sm text-gray-400">/night</span>
                   </div>
                 </div>
-                <button className="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg font-medium">
+                <button
+                  onClick={() => router.push(`/RoomDetails/${hotel.id}`)}
+                  className="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg font-medium"
+                >
                   Book Now
                 </button>
               </div>

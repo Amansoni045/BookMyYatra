@@ -1,5 +1,6 @@
 'use client';
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const AllRooms = () => {
   const [hotels, setHotels] = useState([]);
@@ -122,9 +123,11 @@ const AllRooms = () => {
                 )}
               </div>
 
-              <button className='mt-4 bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition-all w-full'>
-                Book Now
-              </button>
+              <Link href={`/RoomDetails/${hotel.id}`}>
+                <button className='mt-4 bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition-all w-full'>
+                  Book Now
+                </button>
+              </Link>
             </div>
           </div>
         ))}
