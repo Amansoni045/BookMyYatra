@@ -64,7 +64,7 @@ export default function TopHotels() {
                     <span>{hotel.rating}</span>
                   </div>
                   <div>
-                    <span className="font-bold text-gray-900">${hotel.price}</span>
+                    <span className="font-bold text-gray-900">₹{hotel.price}</span>
                     <span className="text-sm text-gray-400">/night</span>
                   </div>
                 </div>
@@ -79,7 +79,10 @@ export default function TopHotels() {
           ))}
         </div>
 
-        <button className="mt-10 px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 hover:bg-gray-100 font-medium">
+        <button
+          className="mt-10 px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 hover:bg-gray-100 font-medium"
+          onClick={() => router.push('/hotels')}
+        >
           View All Hotels
         </button>
       </div>

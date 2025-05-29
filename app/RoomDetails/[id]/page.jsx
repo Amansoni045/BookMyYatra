@@ -4,9 +4,9 @@ import RoomDetails from "../../components/RoomDetails";
 const page = () => {
   return (
     <div>
-      <RoomDetails/>
+      <RoomDetails />
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;
