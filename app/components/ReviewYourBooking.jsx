@@ -57,7 +57,7 @@ const ReviewYourBooking = () => {
           </div>
 
           <div className="mt-6 flex justify-center sm:justify-end">
-            <Link href={`/payment?id=${id}`}>
+            <Link href={`/Payment/${id}`}>
               <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-md transition duration-300">
                 Proceed to Payment
               </button>
