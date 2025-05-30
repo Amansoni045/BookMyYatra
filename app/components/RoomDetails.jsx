@@ -1,10 +1,11 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
+import Link from 'next/link';
 
 const RoomDetails = () => {
   const { id } = useParams();
-  const router = useRouter();
   const [room, setRoom] = useState(null);
 
   useEffect(() => {
@@ -22,10 +23,6 @@ const RoomDetails = () => {
 
     if (id) fetchRoom();
   }, [id]);
-
-  const handleBooking = () => {
-    router.push(`/payment?id=${id}`);
-  };
 
   if (!room) {
     return (
@@ -77,12 +74,11 @@ const RoomDetails = () => {
 
         {/* Book Now Button */}
         <div className="mt-12 flex justify-center sm:justify-start">
-          <button
-            onClick={handleBooking}
-            className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-lg py-3 px-6 rounded-full shadow-lg transition duration-300"
-          >
-            Book Now
-          </button>
+          <Link href={`/ReviewYourBooking/${id}`}>
+            <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-lg py-3 px-6 rounded-full shadow-lg transition duration-300">
+              Book Now
+            </button>
+          </Link>
         </div>
       </div>
     </div>
