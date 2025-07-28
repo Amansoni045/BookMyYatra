@@ -41,7 +41,6 @@ const AllRooms = () => {
 
   return (
     <div className='bg-white text-black min-h-screen px-4 md:px-16 lg:px-24 xl:px-32 pt-28'>
-      {/* Header */}
       <div className='flex flex-col md:flex-row items-start md:items-center justify-between mb-8 relative'>
         <div>
           <h1 className='font-playfair text-4xl md:text-[40px]'>Hotel Rooms</h1>
@@ -50,7 +49,6 @@ const AllRooms = () => {
           </p>
         </div>
 
-        {/* Filter Button + Dropdown */}
         <div className='relative mt-4 md:mt-0'>
           <button
             onClick={() => setShowFilters(!showFilters)}
@@ -94,7 +92,6 @@ const AllRooms = () => {
         </div>
       </div>
 
-      {/* Rooms Grid */}
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
         {filteredHotels.map((hotel) => (
           <div
