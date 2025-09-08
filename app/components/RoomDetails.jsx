@@ -32,7 +32,6 @@ const RoomDetails = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
-      {/* Hero Image */}
       <div className="w-full h-[300px] sm:h-[450px] md:h-[500px] overflow-hidden">
         <img 
           src={room.image} 
@@ -41,7 +40,6 @@ const RoomDetails = () => {
         />
       </div>
 
-      {/* Content */}
       <div className="max-w-6xl mx-auto px-5 py-10">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">{room.name}</h1>
         <p className="text-lg text-gray-600 mt-1">{room.location}</p>
@@ -66,13 +64,11 @@ const RoomDetails = () => {
           </div>
         </div>
 
-        {/* Description and Services */}
         <div className="mt-10 space-y-4 text-gray-700 leading-relaxed">
           <p>{room.description}</p>
           <p className="font-medium">{room.services}</p>
         </div>
 
-        {/* Book Now Button */}
         <div className="mt-12 flex justify-center sm:justify-start">
           <Link href={`/ReviewYourBooking/${id}`}>
             <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-lg py-3 px-6 rounded-full shadow-lg transition duration-300">
