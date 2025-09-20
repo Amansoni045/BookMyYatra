@@ -32,9 +32,9 @@ const Footer = () => {
         <div>
           <h3 className="text-white font-semibold mb-4 text-lg">Follow Us</h3>
           <div className="flex gap-4">
-            <a href="#" className="text-gray-400 hover:text-white transition">Facebook</a>
-            <a href="#" className="text-gray-400 hover:text-white transition">Instagram</a>
-            <a href="#" className="text-gray-400 hover:text-white transition">Twitter</a>
+            <a href="https://facebook.com" className="text-gray-400 hover:text-white transition">Facebook</a>
+            <a href="https://instagram.com" className="text-gray-400 hover:text-white transition">Instagram</a>
+            <a href="https://twitter.com" className="text-gray-400 hover:text-white transition">Twitter</a>
           </div>
         </div>
       </div>
