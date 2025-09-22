@@ -8,11 +8,12 @@ import { useRouter } from 'next/navigation';
 export default function TopHotels() {
   const [hotels, setHotels] = useState([]);
   const router = useRouter();
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL || "http://localhost:5001";
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const res = await fetch('/api/hotels');
+        const res = await fetch(`${backendUrl}/hotels`);
         const data = await res.json();
 
         const topRated = data

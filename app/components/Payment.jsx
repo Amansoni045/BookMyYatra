@@ -11,11 +11,12 @@ const Payment = () => {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [paymentDone, setPaymentDone] = useState(false); 
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL || "http://localhost:5001";
 
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await fetch('/api/hotels', { cache: 'no-store' });
+        const res = await fetch(`${backendUrl}/hotels`);
         const data = await res.json();
         const foundRoom = data.find(hotel => hotel.id.toString() === id);
         setRoom(foundRoom);

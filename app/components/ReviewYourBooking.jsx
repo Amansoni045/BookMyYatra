@@ -7,13 +7,13 @@ import Link from 'next/link';
 const ReviewYourBooking = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL || "http://localhost:5001";
+
 
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await fetch('/api/hotels', {
-          cache: 'no-store',
-        });
+        const res = await fetch(`${backendUrl}/hotels`);
         const data = await res.json();
         const foundRoom = data.find(hotel => hotel.id.toString() === id);
         setRoom(foundRoom);
