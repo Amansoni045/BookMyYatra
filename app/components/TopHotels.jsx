@@ -8,7 +8,9 @@ import { useRouter } from 'next/navigation';
 export default function TopHotels() {
   const [hotels, setHotels] = useState([]);
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL || "http://localhost:5001";
+  const backendUrl = process.env.NODE_ENV === 'production'
+    ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
+    : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
   useEffect(() => {
     const fetchHotels = async () => {
