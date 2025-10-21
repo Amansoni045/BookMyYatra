@@ -13,7 +13,8 @@ const Footer = () => {
             <span className="text-lg font-semibold">TravelStory</span>
           </Link>
           <p className="mt-4 text-gray-400 text-sm">
-            Discover and share your travel stories — create, customize, and cherish your journeys forever.
+            Discover and share your travel stories — create, customize, and
+            cherish your journeys forever.
           </p>
         </div>
 
@@ -21,10 +22,14 @@ const Footer = () => {
           <h3 className="text-white font-semibold mb-4 text-lg">Quick Links</h3>
           <ul className="space-y-2 text-gray-300">
             <li>
-              <Link href="/" className="hover:text-white transition">Home</Link>
+              <Link href="/" className="hover:text-white transition">
+                Home
+              </Link>
             </li>
             <li>
-              <Link href="/hotels" className="hover:text-white transition">Hotels</Link>
+              <Link href="/hotels" className="hover:text-white transition">
+                Hotels
+              </Link>
             </li>
           </ul>
         </div>
@@ -32,9 +37,24 @@ const Footer = () => {
         <div>
           <h3 className="text-white font-semibold mb-4 text-lg">Follow Us</h3>
           <div className="flex gap-4">
-            <a href="https://facebook.com" className="text-gray-400 hover:text-white transition">Facebook</a>
-            <a href="https://instagram.com" className="text-gray-400 hover:text-white transition">Instagram</a>
-            <a href="https://twitter.com" className="text-gray-400 hover:text-white transition">Twitter</a>
+            <a
+              href="https://facebook.com"
+              className="text-gray-400 hover:text-white transition"
+            >
+              Facebook
+            </a>
+            <a
+              href="https://instagram.com"
+              className="text-gray-400 hover:text-white transition"
+            >
+              Instagram
+            </a>
+            <a
+              href="https://twitter.com"
+              className="text-gray-400 hover:text-white transition"
+            >
+              Twitter
+            </a>
           </div>
         </div>
       </div>

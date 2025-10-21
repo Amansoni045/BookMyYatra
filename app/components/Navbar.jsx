@@ -3,7 +3,13 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton} from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -27,9 +33,10 @@ const Navbar = () => {
     }
   }, [isHotelsPage]);
 
-  const navStyle = isHotelsPage || scrolled
-    ? "bg-white/80 shadow-md text-gray-700"
-    : "text-white py-4";
+  const navStyle =
+    isHotelsPage || scrolled
+      ? "bg-white/80 shadow-md text-gray-700"
+      : "text-white py-4";
 
   const logoStyle = isHotelsPage || scrolled ? "invert opacity-80" : "";
 

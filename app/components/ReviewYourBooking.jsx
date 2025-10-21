@@ -1,21 +1,23 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 
 const ReviewYourBooking = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL || "http://localhost:5001";
-
+  const backendUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
+      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
   useEffect(() => {
     const fetchRoom = async () => {
       try {
         const res = await fetch(`${backendUrl}/hotels`);
         const data = await res.json();
-        const foundRoom = data.find(hotel => hotel.id.toString() === id);
+        const foundRoom = data.find((hotel) => hotel.id.toString() === id);
         setRoom(foundRoom);
       } catch (err) {
         console.error("Error fetching hotel data:", err);
@@ -26,14 +28,22 @@ const ReviewYourBooking = () => {
   }, [id]);
 
   if (!room) {
-    return <div className="pt-32 px-6 text-center text-lg font-medium">Booking not found.</div>;
+    return (
+      <div className="pt-32 px-6 text-center text-lg font-medium">
+        Booking not found.
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-6">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
         <div className="w-full h-64 overflow-hidden">
-          <img src={room.image} alt={room.name} className="w-full h-full object-cover" />
+          <img
+            src={room.image}
+            alt={room.name}
+            className="w-full h-full object-cover"
+          />
         </div>
 
         <div className="p-6 space-y-4">
@@ -41,7 +51,12 @@ const ReviewYourBooking = () => {
           <p className="text-gray-600 text-lg">{room.location}</p>
 
           <div className="flex justify-between text-gray-700 font-medium">
-            <p>Price / night: <span className="text-green-600 font-semibold">₹{room.price}</span></p>
+            <p>
+              Price / night:{" "}
+              <span className="text-green-600 font-semibold">
+                ₹{room.price}
+              </span>
+            </p>
             <p>Rating: ⭐ {room.rating}</p>
             <p>Max Guests: {room.maxGuests}</p>
           </div>

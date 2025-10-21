@@ -1,16 +1,17 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { Star, MapPin } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Star, MapPin } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function TopHotels() {
   const [hotels, setHotels] = useState([]);
   const router = useRouter();
-  const backendUrl = process.env.NODE_ENV === 'production'
-    ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
-    : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
+  const backendUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
+      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -18,13 +19,11 @@ export default function TopHotels() {
         const res = await fetch(`${backendUrl}/hotels`);
         const data = await res.json();
 
-        const topRated = data
-          .sort((a, b) => b.rating - a.rating)
-          .slice(0, 4);
+        const topRated = data.sort((a, b) => b.rating - a.rating).slice(0, 4);
 
         setHotels(topRated);
       } catch (error) {
-        console.error('Error fetching hotels:', error);
+        console.error("Error fetching hotels:", error);
       }
     };
 
@@ -35,11 +34,17 @@ export default function TopHotels() {
     <section className="py-12 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 text-center">
         <h2 className="text-3xl font-bold text-gray-900 mb-2">Top Hotels</h2>
-        <p className="text-gray-600 mb-8">Explore our most sought-after stays that blend comfort and class at the best locations.</p>
+        <p className="text-gray-600 mb-8">
+          Explore our most sought-after stays that blend comfort and class at
+          the best locations.
+        </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {hotels.map((hotel) => (
-            <div key={hotel.id} className="bg-white rounded-xl shadow p-4 text-left">
+            <div
+              key={hotel.id}
+              className="bg-white rounded-xl shadow p-4 text-left"
+            >
               <div className="relative">
                 <Image
                   src={hotel.image}
@@ -56,7 +61,9 @@ export default function TopHotels() {
                 )}
               </div>
               <div className="mt-4">
-                <h3 className="text-lg font-semibold text-black">{hotel.name}</h3>
+                <h3 className="text-lg font-semibold text-black">
+                  {hotel.name}
+                </h3>
                 <p className="text-sm text-gray-500 flex items-center">
                   <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                   {hotel.location}
@@ -67,7 +74,9 @@ export default function TopHotels() {
                     <span>{hotel.rating}</span>
                   </div>
                   <div>
-                    <span className="font-bold text-gray-900">₹{hotel.price}</span>
+                    <span className="font-bold text-gray-900">
+                      ₹{hotel.price}
+                    </span>
                     <span className="text-sm text-gray-400">/night</span>
                   </div>
                 </div>
@@ -84,7 +93,7 @@ export default function TopHotels() {
 
         <button
           className="mt-10 px-6 py-2 bg-white border border-gray-300 rounded-lg text-gray-800 hover:bg-gray-100 font-medium"
-          onClick={() => router.push('/hotels')}
+          onClick={() => router.push("/hotels")}
         >
           View All Hotels
         </button>

@@ -1,7 +1,7 @@
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 
 const Hero = () => {
   return (
@@ -13,14 +13,15 @@ const Hero = () => {
 
       <p className="bg-[#49B9FF]/50 backdrop-blur-sm relative px-3.5 py-1 rounded-full text-sm shadow-md">
         Book Your Dream Stay Today!
-      </p> 
+      </p>
 
-      <h1 className="font-playfair relative text-2xl md:text-5xl md:text-[56px] md:leading-[56px] font-bold md:font-extrabold max-w-xl mt-5 drop-shadow-lg"> 
+      <h1 className="font-playfair relative text-2xl md:text-5xl md:text-[56px] md:leading-[56px] font-bold md:font-extrabold max-w-xl mt-5 drop-shadow-lg">
         Your Gateway to Comfort and Luxury!
       </h1>
 
       <p className="max-w-xl relative mt-5 text-sm md:text-base">
-        Find the perfect hotel at the best prices with BookMyYatra. Easy booking, 24/7 support, and great deals—start your journey now!
+        Find the perfect hotel at the best prices with BookMyYatra. Easy
+        booking, 24/7 support, and great deals—start your journey now!
       </p>
 
       <Link href="/hotels">

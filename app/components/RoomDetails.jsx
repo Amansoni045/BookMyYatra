@@ -1,24 +1,27 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 
 const RoomDetails = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL || "http://localhost:5001";
+  const backendUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
+      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
   useEffect(() => {
     const fetchRoom = async () => {
       try {
         const res = await fetch(`${backendUrl}/hotels`);
-        if (!res.ok) throw new Error('Failed to fetch hotels');
+        if (!res.ok) throw new Error("Failed to fetch hotels");
         const data = await res.json();
-        const foundRoom = data.find(hotel => hotel.id.toString() === id);
+        const foundRoom = data.find((hotel) => hotel.id.toString() === id);
         setRoom(foundRoom);
       } catch (err) {
-        console.error('Error fetching room details:', err);
+        console.error("Error fetching room details:", err);
       }
     };
 
@@ -27,27 +30,33 @@ const RoomDetails = () => {
 
   if (!room) {
     return (
-      <div className="pt-32 px-6 text-center text-lg font-medium">Loading room details...</div>
+      <div className="pt-32 px-6 text-center text-lg font-medium">
+        Loading room details...
+      </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-white text-gray-800">
       <div className="w-full h-[300px] sm:h-[450px] md:h-[500px] overflow-hidden">
-        <img 
-          src={room.image} 
-          alt={room.name} 
+        <img
+          src={room.image}
+          alt={room.name}
           className="w-full h-full object-cover"
         />
       </div>
 
       <div className="max-w-6xl mx-auto px-5 py-10">
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">{room.name}</h1>
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+          {room.name}
+        </h1>
         <p className="text-lg text-gray-600 mt-1">{room.location}</p>
 
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-6 gap-4">
           <div className="space-y-2">
-            <p className="text-xl font-semibold text-green-600">₹{room.price} / night</p>
+            <p className="text-xl font-semibold text-green-600">
+              ₹{room.price} / night
+            </p>
             <p className="text-sm text-gray-500">Incl. taxes and fees</p>
           </div>
 
