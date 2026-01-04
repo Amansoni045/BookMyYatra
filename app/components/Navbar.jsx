@@ -3,13 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
+
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -57,36 +51,29 @@ const Navbar = () => {
           <Link
             key={index}
             href={link.url}
-            className={`group ${
-              isHotelsPage || scrolled ? "text-gray-700" : "text-white"
-            }`}
+            className={`group ${isHotelsPage || scrolled ? "text-gray-700" : "text-white"
+              }`}
           >
             {link.label}
             <div
-              className={`${
-                isHotelsPage || scrolled ? "bg-gray-700" : "bg-white"
-              } h-0.5 w-0 group-hover:w-full transition-all`}
+              className={`${isHotelsPage || scrolled ? "bg-gray-700" : "bg-white"
+                } h-0.5 w-0 group-hover:w-full transition-all`}
             />
           </Link>
         ))}
       </div>
 
       <div className="hidden md:flex items-center gap-4">
-        <SignedOut>
-          <SignInButton mode="modal">
-            <button className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-              Sign In
-            </button>
-          </SignInButton>
-          <SignUpButton mode="modal">
-            <button className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-              Sign Up
-            </button>
-          </SignUpButton>
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+        <Link href="/login">
+          <button className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all duration-300 hover:scale-105">
+            Sign In
+          </button>
+        </Link>
+        <Link href="/signup">
+          <button className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all duration-300 hover:scale-105">
+            Sign Up
+          </button>
+        </Link>
       </div>
 
       <div className="flex items-center md:hidden">
@@ -105,9 +92,8 @@ const Navbar = () => {
       </div>
 
       <div
-        className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col items-center justify-center gap-6 font-medium text-gray-800 transition-all ${
-          menuOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col items-center justify-center gap-6 font-medium text-gray-800 transition-all ${menuOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <button
           className="absolute top-4 right-4"
@@ -136,22 +122,18 @@ const Navbar = () => {
           </Link>
         ))}
 
-        <SignedOut>
-          <SignInButton mode="modal">
+        <div className="flex gap-4">
+          <Link href="/login">
             <button className="bg-black text-white px-8 py-2.5 rounded-full hover:bg-gray-800 transition-all duration-500 hover:scale-105">
               Sign In
             </button>
-          </SignInButton>
-          <SignUpButton mode="modal">
+          </Link>
+          <Link href="/signup">
             <button className="bg-black text-white px-8 py-2.5 rounded-full hover:bg-gray-800 transition-all duration-500 hover:scale-105">
               Sign Up
             </button>
-          </SignUpButton>
-        </SignedOut>
-
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
+          </Link>
+        </div>
       </div>
     </nav>
   );
