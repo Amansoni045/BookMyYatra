@@ -7,15 +7,12 @@ import Link from "next/link";
 const RoomDetails = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
-  const backendUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
-      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     const fetchRoom = async () => {
       try {
-        const res = await fetch(`${backendUrl}/hotels`);
+        const res = await fetch(`${backendUrl}/api/hotels`);
         if (!res.ok) throw new Error("Failed to fetch hotels");
         const data = await res.json();
         const foundRoom = data.find((hotel) => hotel.id.toString() === id);

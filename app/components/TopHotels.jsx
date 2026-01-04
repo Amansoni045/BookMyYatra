@@ -8,7 +8,8 @@ import { useRouter } from "next/navigation";
 export default function TopHotels() {
   const [hotels, setHotels] = useState([]);
   const router = useRouter();
-  const backendUrl = "";
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  console.log("TopHotels Backend URL:", backendUrl);
 
   useEffect(() => {
     const fetchHotels = async () => {

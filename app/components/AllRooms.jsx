@@ -8,12 +8,15 @@ const AllRooms = () => {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
-  const backendUrl = "";
+
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
         const res = await fetch(`${backendUrl}/api/hotels`);
+        if (!res.ok) throw new Error("Failed to fetch hotels");
+
         const data = await res.json();
         setHotels(data);
         setFilteredHotels(data);
@@ -23,7 +26,7 @@ const AllRooms = () => {
     };
 
     fetchHotels();
-  }, []);
+  }, [backendUrl]);
 
   const applyFilter = (filter) => {
     let updatedList = [...hotels];
@@ -33,7 +36,7 @@ const AllRooms = () => {
     } else if (filter === "price") {
       updatedList.sort((a, b) => a.price - b.price);
     } else if (filter === "tag") {
-      updatedList = updatedList.filter((hotel) => hotel.tag !== "");
+      updatedList = updatedList.filter((hotel) => hotel.tag);
     }
 
     setSelectedFilter(filter);
@@ -43,94 +46,46 @@ const AllRooms = () => {
 
   return (
     <div className="bg-white text-black min-h-screen px-4 md:px-16 lg:px-24 xl:px-32 pt-28">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 relative">
-        <div>
-          <h1 className="font-playfair text-4xl md:text-[40px]">Hotel Rooms</h1>
-          <p className="text-sm md:text-base text-gray-500/90 mt-2 max-w-w174">
-            Explore all the rooms available for your trip! From budget-friendly
-            stays to premium comfort, find the perfect match for your next
-            adventure.
-          </p>
-        </div>
-
-        <div className="relative mt-4 md:mt-0">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="bg-gray-800 text-white text-sm px-4 py-2 rounded hover:bg-gray-700 transition-all"
-          >
-            Filter
-          </button>
-
-          {showFilters && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg z-10">
-              <button
-                onClick={() => applyFilter("rating")}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              >
-                Sort by Rating (High to Low)
-              </button>
-              <button
-                onClick={() => applyFilter("price")}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              >
-                Sort by Price (Low to High)
-              </button>
-              <button
-                onClick={() => applyFilter("tag")}
-                className="w-full text-left px-4 py-2 hover:bg-gray-100"
-              >
-                Show Only Tagged
-              </button>
-              <button
-                onClick={() => {
-                  setFilteredHotels(hotels);
-                  setSelectedFilter("");
-                  setShowFilters(false);
-                }}
-                className="w-full text-left px-4 py-2 text-red-600 hover:bg-red-100"
-              >
-                Clear Filters
-              </button>
-            </div>
-          )}
-        </div>
+      {/* HEADER */}
+      <div className="flex justify-between mb-8">
+        <h1 className="text-4xl font-playfair">Hotel Rooms</h1>
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="bg-gray-800 text-white px-4 py-2 rounded"
+        >
+          Filter
+        </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {/* FILTER MENU */}
+      {showFilters && (
+        <div className="mb-6 space-x-4">
+          <button onClick={() => applyFilter("rating")}>Rating</button>
+          <button onClick={() => applyFilter("price")}>Price</button>
+          <button onClick={() => applyFilter("tag")}>Tagged</button>
+          <button onClick={() => setFilteredHotels(hotels)}>Clear</button>
+        </div>
+      )}
+
+      {/* HOTEL GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {filteredHotels.map((hotel) => (
-          <div
-            key={hotel.id}
-            className="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-all"
-          >
+          <div key={hotel.id} className="border rounded-xl overflow-hidden">
             <Image
               src={hotel.image}
               alt={hotel.name}
               width={400}
               height={300}
-              className="w-full h-48 object-cover rounded-t-xl"
+              className="h-48 object-cover"
             />
-            <div className="p-4 flex flex-col justify-between h-[210px]">
-              <div>
-                <h3 className="text-lg font-semibold">{hotel.name}</h3>
-                <p className="text-sm text-gray-500">{hotel.location}</p>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-yellow-500 font-semibold">
-                    {hotel.rating} ★
-                  </span>
-                  <span className="text-base font-semibold text-gray-800">
-                    ₹{hotel.price}/night
-                  </span>
-                </div>
-                {hotel.tag && (
-                  <span className="inline-block mt-2 text-xs text-white bg-blue-600 px-2 py-1 rounded">
-                    {hotel.tag}
-                  </span>
-                )}
-              </div>
+            <div className="p-4">
+              <h3 className="font-semibold">{hotel.name}</h3>
+              <p className="text-sm text-gray-500">{hotel.location}</p>
+              <p className="mt-2">₹{hotel.price}/night</p>
 
               <Link href={`/RoomDetails/${hotel.id}`}>
-                <button className="mt-4 bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 transition-all w-full">
-                  Book Now
+                <button className="mt-4 w-full bg-blue-600 text-white py-2 rounded">
+                  View Details
                 </button>
               </Link>
             </div>

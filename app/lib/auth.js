@@ -1,5 +1,5 @@
-// Force using local API routes by ignoring env var for now
-const API_URL = "";
+const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+console.log("Auth API_URL:", API_URL);
 
 
 export const signup = async (data) => {

@@ -17,14 +17,52 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <form onSubmit={submit} className="flex flex-col gap-4 w-80">
-        <h2 className="text-2xl font-bold">Signup</h2>
-        <input placeholder="Name" onChange={(e) => setForm({ ...form, name: e.target.value })} />
-        <input placeholder="Email" onChange={(e) => setForm({ ...form, email: e.target.value })} />
-        <input type="password" placeholder="Password" onChange={(e) => setForm({ ...form, password: e.target.value })} />
-        <button className="bg-black text-white py-2 rounded">Signup</button>
-      </form>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div className="absolute inset-0 bg-[#020b2d]/70 backdrop-blur-xl" />
+
+      <div className="relative w-full max-w-md rounded-2xl bg-white/10 border border-white/20 shadow-2xl p-8 text-white">
+        <h2 className="text-3xl font-semibold text-center">
+          Create Account
+        </h2>
+        <p className="text-center text-white/70 mt-2">
+          Start booking luxury stays
+        </p>
+
+        <form onSubmit={submit} className="mt-8 space-y-5">
+          <input
+            placeholder="Full name"
+            className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            onChange={(e) =>
+              setForm({ ...form, name: e.target.value })
+            }
+            required
+          />
+
+          <input
+            type="email"
+            placeholder="Email address"
+            className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            onChange={(e) =>
+              setForm({ ...form, email: e.target.value })
+            }
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-3 rounded-lg bg-white/20 border border-white/30 placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-cyan-400"
+            onChange={(e) =>
+              setForm({ ...form, password: e.target.value })
+            }
+            required
+          />
+
+          <button className="w-full py-3 rounded-full bg-cyan-500 hover:bg-cyan-400 transition font-semibold text-black">
+            Sign Up
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
