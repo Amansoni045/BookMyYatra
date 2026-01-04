@@ -21,12 +21,19 @@ const Navbar = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getMe()
-      .then((data) => {
-        if (data?.name) setUser(data);
-        else setUser(null);
-      })
-      .finally(() => setLoading(false));
+    const fetchUser = () => {
+      getMe()
+        .then((data) => {
+          if (data?.name) setUser(data);
+          else setUser(null);
+        })
+        .finally(() => setLoading(false));
+    };
+
+    fetchUser();
+
+    window.addEventListener("auth-change", fetchUser);
+    return () => window.removeEventListener("auth-change", fetchUser);
   }, []);
 
   useEffect(() => {
@@ -58,9 +65,8 @@ const Navbar = () => {
           <img
             src="/Assets/logo.png"
             alt="Logo"
-            className={`h-16 transition-all duration-500 ${
-              isSolid ? "invert opacity-80" : ""
-            }`}
+            className={`h-16 transition-all duration-500 ${isSolid ? "invert opacity-80" : ""
+              }`}
           />
         </Link>
 

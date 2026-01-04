@@ -1,9 +1,18 @@
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-console.log("Auth API_URL:", API_URL);
+const getBackendUrl = () => {
+    if (process.env.NEXT_PUBLIC_BACKEND_URL) {
+        return process.env.NEXT_PUBLIC_BACKEND_URL;
+    }
+    if (process.env.NODE_ENV === "production") {
+        return process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL || "http://localhost:5000";
+    }
+    return process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL || "http://localhost:5000";
+};
+
+const API_URL = getBackendUrl();
 
 
 export const signup = async (data) => {
-    const res = await fetch(`${API_URL}/api/auth/signup`, {
+    const res = await fetch(`${API_URL}/api/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -13,7 +22,7 @@ export const signup = async (data) => {
 };
 
 export const login = async (data) => {
-    const res = await fetch(`${API_URL}/api/auth/login`, {
+    const res = await fetch(`${API_URL}/api/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -23,7 +32,7 @@ export const login = async (data) => {
 };
 
 export const getMe = async () => {
-    const res = await fetch(`${API_URL}/api/auth/me`, {
+    const res = await fetch(`${API_URL}/api/me`, {
         credentials: "include",
     });
     if (!res.ok) {
@@ -33,7 +42,7 @@ export const getMe = async () => {
 };
 
 export const logout = async () => {
-    await fetch(`${API_URL}/api/auth/logout`, {
+    await fetch(`${API_URL}/api/logout`, {
         method: "POST",
         credentials: "include",
     });

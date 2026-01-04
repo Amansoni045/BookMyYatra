@@ -7,7 +7,12 @@ import Link from "next/link";
 const RoomDetails = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const backendUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL ||
+    (process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
+      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL) ||
+    "http://localhost:5000";
 
   useEffect(() => {
     const fetchRoom = async () => {
