@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
+import { getMe, logout } from "@/app/lib/auth";
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -16,124 +16,66 @@ const Navbar = () => {
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    getMe().then((data) => {
+      setUser(data);
+      setAuthLoading(false);
+    });
+  }, []);
 
   useEffect(() => {
     if (!isHotelsPage) {
-      const handleScroll = () => {
-        setScrolled(window.scrollY > 10);
-      };
+      const handleScroll = () => setScrolled(window.scrollY > 10);
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
     }
   }, [isHotelsPage]);
+
+  const handleLogout = async () => {
+    await logout();
+    setUser(null);
+  };
 
   const navStyle =
     isHotelsPage || scrolled
       ? "bg-white/80 shadow-md text-gray-700"
       : "text-white py-4";
 
-  const logoStyle = isHotelsPage || scrolled ? "invert opacity-80" : "";
-
   return (
-    <nav
-      className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 transition-all duration-500 z-50 ${navStyle}`}
-    >
-      <Link href="/" className="flex items-center">
-        <img
-          src="/Assets/logo.png"
-          alt="Logo"
-          className={`h-16 ${logoStyle}`}
-        />
+    <nav className={`fixed top-0 left-0 w-full flex items-center justify-between px-4 md:px-16 z-50 ${navStyle}`}>
+      <Link href="/">
+        <img src="/Assets/logo.png" alt="Logo" className="h-16" />
       </Link>
 
-      <div className="hidden md:flex flex-grow items-center justify-center gap-8">
-        {navLinks.map((link, index) => (
-          <Link
-            key={index}
-            href={link.url}
-            className={`group ${isHotelsPage || scrolled ? "text-gray-700" : "text-white"
-              }`}
-          >
-            {link.label}
-            <div
-              className={`${isHotelsPage || scrolled ? "bg-gray-700" : "bg-white"
-                } h-0.5 w-0 group-hover:w-full transition-all`}
-            />
-          </Link>
-        ))}
-      </div>
-
-      <div className="hidden md:flex items-center gap-4">
-        <Link href="/login">
-          <button className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-            Sign In
-          </button>
-        </Link>
-        <Link href="/signup">
-          <button className="bg-black text-white px-5 py-2 rounded-full hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-            Sign Up
-          </button>
-        </Link>
-      </div>
-
-      <div className="flex items-center md:hidden">
-        <svg
-          onClick={() => setMenuOpen(!menuOpen)}
-          className={`h-6 w-6 cursor-pointer ${logoStyle}`}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-        >
-          <line x1="4" y1="6" x2="20" y2="6" />
-          <line x1="4" y1="12" x2="20" y2="12" />
-          <line x1="4" y1="18" x2="20" y2="18" />
-        </svg>
-      </div>
-
-      <div
-        className={`fixed top-0 left-0 w-full h-screen bg-white text-base flex flex-col items-center justify-center gap-6 font-medium text-gray-800 transition-all ${menuOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-      >
-        <button
-          className="absolute top-4 right-4"
-          onClick={() => setMenuOpen(false)}
-        >
-          <svg
-            className="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-
-        {navLinks.map((link, index) => (
-          <Link
-            key={index}
-            href={link.url}
-            className="text-gray-800"
-            onClick={() => setMenuOpen(false)}
-          >
+      <div className="hidden md:flex gap-8">
+        {navLinks.map((link) => (
+          <Link key={link.url} href={link.url}>
             {link.label}
           </Link>
         ))}
+      </div>
 
-        <div className="flex gap-4">
-          <Link href="/login">
-            <button className="bg-black text-white px-8 py-2.5 rounded-full hover:bg-gray-800 transition-all duration-500 hover:scale-105">
-              Sign In
+      <div className="hidden md:flex gap-4">
+        {!authLoading && user ? (
+          <>
+            <span>Hi, {user.name}</span>
+            <button onClick={handleLogout} className="bg-black text-white px-5 py-2 rounded-full">
+              Logout
             </button>
-          </Link>
-          <Link href="/signup">
-            <button className="bg-black text-white px-8 py-2.5 rounded-full hover:bg-gray-800 transition-all duration-500 hover:scale-105">
-              Sign Up
-            </button>
-          </Link>
-        </div>
+          </>
+        ) : (
+          <>
+            <Link href="/auth/login">
+              <button className="bg-black text-white px-5 py-2 rounded-full">Sign In</button>
+            </Link>
+            <Link href="/auth/signup">
+              <button className="bg-black text-white px-5 py-2 rounded-full">Sign Up</button>
+            </Link>
+          </>
+        )}
       </div>
     </nav>
   );

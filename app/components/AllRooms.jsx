@@ -8,15 +8,12 @@ const AllRooms = () => {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
-  const backendUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
-      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
+  const backendUrl = "";
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const res = await fetch(`${backendUrl}/hotels`);
+        const res = await fetch(`${backendUrl}/api/hotels`);
         const data = await res.json();
         setHotels(data);
         setFilteredHotels(data);
