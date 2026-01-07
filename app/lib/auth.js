@@ -9,6 +9,7 @@ const getBackendUrl = () => {
 };
 
 const API_URL = getBackendUrl();
+console.log("Auth API_URL:", API_URL);
 
 
 export const signup = async (data) => {
@@ -35,11 +36,12 @@ export const getMe = async () => {
     const res = await fetch(`${API_URL}/api/me`, {
         credentials: "include",
     });
-    if (!res.ok) {
-        return null
-    };
+
+    if (!res.ok) return null;
+
     return res.json();
 };
+
 
 export const logout = async () => {
     await fetch(`${API_URL}/api/logout`, {

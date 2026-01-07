@@ -13,9 +13,10 @@ export default function TopHotels() {
     (process.env.NODE_ENV === "production"
       ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
       : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL) ||
-    "http://localhost:5000";
+    "http://localhost:5001";
 
   useEffect(() => {
+    console.log("TopHotels backendUrl:", backendUrl);
     const fetchHotels = async () => {
       try {
         const res = await fetch(`${backendUrl}/api/hotels`);
