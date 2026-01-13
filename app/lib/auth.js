@@ -1,9 +1,10 @@
+
 const API_URL =
-    process.env.NODE_ENV === "production" || process.env.NEXT_PUBLIC_USE_HOSTED_BACKEND === "true"
-        ? process.env.NEXT_PUBLIC_BACKEND_URL
+    process.env.NODE_ENV === "production" ||
+        process.env.NEXT_PUBLIC_USE_HOSTED_BACKEND === "true"
+        ? "http://localhost:5001"
         : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
-console.log("Auth API_URL:", API_URL);
 
 export const signup = async (data) => {
     try {

@@ -1,3 +1,5 @@
+"use client";
+
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
@@ -13,10 +15,10 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata = {
-  title: "BookMyYatra",
-  description: "Book your yatra with ease and comfort",
-};
+// export const metadata = {
+//   title: "BookMyYatra",
+//   description: "Book your yatra with ease and comfort",
+// };
 
 export default function RootLayout({ children }) {
   return (
