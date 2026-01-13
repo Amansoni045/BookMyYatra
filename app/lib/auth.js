@@ -1,9 +1,9 @@
 
 const API_URL =
-    process.env.NODE_ENV === "production" ||
-        process.env.NEXT_PUBLIC_USE_HOSTED_BACKEND === "true"
-        ? "http://localhost:5001"
-        : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
+        process.env.NODE_ENV === "development"
+            ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
+            : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL ||
+            process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
 
 export const signup = async (data) => {
