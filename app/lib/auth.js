@@ -1,58 +1,40 @@
-
-const API_URL =
-        process.env.NODE_ENV === "development"
-            ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-            : process.env.NEXT_PUBLIC_BACKEND_SERVER_URL ||
-            process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
-
+const BASE_URL = "/api";
 
 export const signup = async (data) => {
-    try {
-        const res = await fetch(`${API_URL}/api/signup`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify(data),
-        });
-        return res.json();
-    } catch (error) {
-        console.error("Signup fetch error:", error);
-        throw new Error("Unable to connect to the server. Please check if the backend is running.");
-    }
+  const res = await fetch(`${BASE_URL}/signup`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  return res.json();
 };
 
 export const login = async (data) => {
-    try {
-        const res = await fetch(`${API_URL}/api/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify(data),
-        });
-        return res.json();
-    } catch (error) {
-        console.error("Login fetch error:", error);
-        throw new Error("Unable to connect to the server. Please check if the backend is running.");
-    }
+  const res = await fetch(`${BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+  return res.json();
 };
 
 export const getMe = async () => {
-    try {
-        const res = await fetch(`${API_URL}/api/me`, {
-            credentials: "include",
-        });
-
-        if (!res.ok) return null;
-        return res.json();
-    } catch (error) {
-        console.error("GetMe fetch error:", error);
-        return null;
-    }
+  try {
+    const res = await fetch(`${BASE_URL}/me`, {
+      credentials: "include",
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
 };
 
 export const logout = async () => {
-    await fetch(`${API_URL}/api/logout`, {
-        method: "POST",
-        credentials: "include",
-    });
+  await fetch(`${BASE_URL}/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
 };
