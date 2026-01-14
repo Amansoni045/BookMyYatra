@@ -4,6 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+const BACKEND_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
+    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+
 const Payment = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
@@ -11,24 +16,24 @@ const Payment = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [paymentDone, setPaymentDone] = useState(false);
-  const backendUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
-      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchRoom = async () => {
       try {
-        const res = await fetch(`${backendUrl}/hotels`);
+        const res = await fetch(`${BACKEND_URL}/api/hotels`);
         const data = await res.json();
-        const foundRoom = data.find((hotel) => hotel.id.toString() === id);
+        const foundRoom = data.find(
+          (hotel) => hotel.id.toString() === id
+        );
         setRoom(foundRoom);
       } catch (err) {
-        console.error("Error fetching hotel data:", err);
+        console.error(err);
       }
     };
 
-    if (id) fetchRoom();
+    fetchRoom();
   }, [id]);
 
   const handlePayment = () => {
@@ -37,7 +42,7 @@ const Payment = () => {
       return;
     }
 
-    alert(`✅ Payment successful!`);
+    alert("✅ Payment successful!");
     setPaymentDone(true);
   };
 
@@ -61,7 +66,9 @@ const Payment = () => {
           <p className="text-gray-600">Location: {room.location}</p>
           <p className="text-gray-700 mt-2">
             Total Amount:{" "}
-            <span className="text-green-600 font-bold">₹{room.price}</span>
+            <span className="text-green-600 font-bold">
+              ₹{room.price}
+            </span>
           </p>
         </div>
 
@@ -77,10 +84,11 @@ const Payment = () => {
               setEmail(e.target.value);
               setError("");
             }}
-            required
             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+          {error && (
+            <p className="text-sm text-red-500 mt-1">{error}</p>
+          )}
         </div>
 
         <div>
@@ -98,7 +106,9 @@ const Payment = () => {
                   onChange={() => setPaymentMethod(method)}
                 />
                 <span className="capitalize">
-                  {method === "card" ? "Credit / Debit Card" : method}
+                  {method === "card"
+                    ? "Credit / Debit Card"
+                    : method}
                 </span>
               </label>
             ))}
@@ -108,14 +118,14 @@ const Payment = () => {
         {!paymentDone ? (
           <button
             onClick={handlePayment}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-full transition duration-300"
+            className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-full transition"
           >
             Confirm & Pay ₹{room.price}
           </button>
         ) : (
           <Link
             href="/"
-            className="block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition duration-300"
+            className="block text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-full transition"
           >
             Go to Home
           </Link>

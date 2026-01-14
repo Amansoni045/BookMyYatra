@@ -4,24 +4,27 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { Star, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
+
+const BACKEND_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
+    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+
 export default function TopHotels() {
   const [hotels, setHotels] = useState([]);
   const router = useRouter();
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  console.log("TopHotels backendUrl:", backendUrl);
 
   useEffect(() => {
     const fetchHotels = async () => {
       try {
-        const res = await fetch(`${backendUrl}/api/hotels`);
+        const res = await fetch(`${BACKEND_URL}/api/hotels`);
         const data = await res.json();
-
-        const topRated = data.sort((a, b) => b.rating - a.rating).slice(0, 4);
-
+        const topRated = data
+          .sort((a, b) => b.rating - a.rating)
+          .slice(0, 4);
         setHotels(topRated);
       } catch (error) {
-        console.error("Error fetching hotels:", error);
+        console.error(error);
       }
     };
 
@@ -58,6 +61,7 @@ export default function TopHotels() {
                   </span>
                 )}
               </div>
+
               <div className="mt-4">
                 <h3 className="text-lg font-semibold text-black">
                   {hotel.name}
@@ -66,6 +70,7 @@ export default function TopHotels() {
                   <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                   {hotel.location}
                 </p>
+
                 <div className="flex items-center justify-between mt-2">
                   <div className="flex items-center text-orange-500">
                     <Star className="w-4 h-4 mr-1" fill="currentColor" />
@@ -78,8 +83,11 @@ export default function TopHotels() {
                     <span className="text-sm text-gray-400">/night</span>
                   </div>
                 </div>
+
                 <button
-                  onClick={() => router.push(`/RoomDetails/${hotel.id}`)}
+                  onClick={() =>
+                    router.push(`/RoomDetails/${hotel.id}`)
+                  }
                   className="mt-4 w-full bg-gray-100 hover:bg-gray-200 text-gray-800 py-2 rounded-lg font-medium"
                 >
                   Book Now

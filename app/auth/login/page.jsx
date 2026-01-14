@@ -23,7 +23,9 @@ export default function LoginPage() {
 
       if (res?.id) {
         window.dispatchEvent(new Event("auth-change"));
-        router.push("/");
+        setTimeout(() => {
+          router.push("/");
+        }, 2000);
       } else {
         setError(res?.message || "Login failed.");
       }

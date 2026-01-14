@@ -4,27 +4,32 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+const BACKEND_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
+    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+
 const ReviewYourBooking = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
-  const backendUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
-      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL;
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchRoom = async () => {
       try {
-        const res = await fetch(`${backendUrl}/hotels`);
+        const res = await fetch(`${BACKEND_URL}/api/hotels`);
         const data = await res.json();
-        const foundRoom = data.find((hotel) => hotel.id.toString() === id);
+        const foundRoom = data.find(
+          (hotel) => hotel.id.toString() === id
+        );
         setRoom(foundRoom);
       } catch (err) {
-        console.error("Error fetching hotel data:", err);
+        console.error(err);
       }
     };
 
-    if (id) fetchRoom();
+    fetchRoom();
   }, [id]);
 
   if (!room) {
@@ -47,10 +52,12 @@ const ReviewYourBooking = () => {
         </div>
 
         <div className="p-6 space-y-4">
-          <h2 className="text-3xl font-bold text-gray-800">{room.name}</h2>
+          <h2 className="text-3xl font-bold text-gray-800">
+            {room.name}
+          </h2>
           <p className="text-gray-600 text-lg">{room.location}</p>
 
-          <div className="flex justify-between text-gray-700 font-medium">
+          <div className="flex flex-wrap gap-4 text-gray-700 font-medium">
             <p>
               Price / night:{" "}
               <span className="text-green-600 font-semibold">
@@ -73,7 +80,7 @@ const ReviewYourBooking = () => {
 
           <div className="mt-6 flex justify-center sm:justify-end">
             <Link href={`/Payment/${id}`}>
-              <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-md transition duration-300">
+              <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-full shadow-md transition">
                 Proceed to Payment
               </button>
             </Link>

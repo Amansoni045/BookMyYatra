@@ -3,11 +3,18 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 
+const BACKEND_URL =
+    process.env.NODE_ENV === "development"
+        ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
+        : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+
 export default function EditHotelPage() {
     const router = useRouter();
     const { id } = useParams();
+
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
+
     const [formData, setFormData] = useState({
         name: "",
         location: "",
@@ -20,15 +27,17 @@ export default function EditHotelPage() {
         maxGuests: "",
     });
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
     useEffect(() => {
+        if (!id) return;
+
         const fetchHotel = async () => {
             try {
-                const res = await fetch(`${backendUrl}/api/hotels/${id}`, {
+                const res = await fetch(`${BACKEND_URL}/api/hotels/${id}`, {
                     credentials: "include",
                 });
+
                 if (!res.ok) throw new Error("Failed to fetch hotel");
+
                 const data = await res.json();
 
                 setFormData({
@@ -42,8 +51,8 @@ export default function EditHotelPage() {
                     services: data.services || "",
                     maxGuests: data.maxGuests,
                 });
-            } catch (error) {
-                console.error("Error fetching hotel:", error);
+            } catch (err) {
+                console.error(err);
                 alert("Failed to load hotel details");
                 router.push("/admin/hotels");
             } finally {
@@ -51,8 +60,8 @@ export default function EditHotelPage() {
             }
         };
 
-        if (id) fetchHotel();
-    }, [id, backendUrl, router]);
+        fetchHotel();
+    }, [id, router]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -64,11 +73,9 @@ export default function EditHotelPage() {
         setSubmitting(true);
 
         try {
-            const res = await fetch(`${backendUrl}/api/admin/hotels/${id}`, {
+            const res = await fetch(`${BACKEND_URL}/api/admin/hotels/${id}`, {
                 method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 body: JSON.stringify({
                     ...formData,
@@ -79,21 +86,23 @@ export default function EditHotelPage() {
             });
 
             if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.message || "Failed to update hotel");
+                const err = await res.json();
+                throw new Error(err.message || "Failed to update hotel");
             }
 
             alert("Hotel updated successfully!");
             router.push("/admin/hotels");
-        } catch (error) {
-            console.error("Error updating hotel:", error);
-            alert(error.message || "Error updating hotel. Please try again.");
+        } catch (err) {
+            console.error(err);
+            alert(err.message || "Something went wrong");
         } finally {
             setSubmitting(false);
         }
     };
 
-    if (loading) return <div className="p-8">Loading hotel details...</div>;
+    if (loading) {
+        return <div className="p-8 text-center">Loading hotel details...</div>;
+    }
 
     return (
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-md">
@@ -102,122 +111,124 @@ export default function EditHotelPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Hotel Name</label>
+                        <label className="block text-sm font-medium">Hotel Name</label>
                         <input
                             type="text"
                             name="name"
                             required
                             value={formData.name}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Location</label>
+                        <label className="block text-sm font-medium">Location</label>
                         <input
                             type="text"
                             name="location"
                             required
                             value={formData.location}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Price (per night)</label>
+                        <label className="block text-sm font-medium">Price / Night</label>
                         <input
                             type="number"
                             name="price"
-                            required
                             min="0"
+                            required
                             value={formData.price}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Rating (0-5)</label>
+                        <label className="block text-sm font-medium">Rating (0–5)</label>
                         <input
                             type="number"
-                            name="rating"
                             step="0.1"
                             min="0"
                             max="5"
+                            name="rating"
                             required
                             value={formData.rating}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700">Image URL</label>
+                        <label className="block text-sm font-medium">Image URL</label>
                         <input
                             type="url"
                             name="image"
                             required
                             value={formData.image}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Tag (Optional)</label>
+                        <label className="block text-sm font-medium">Tag</label>
                         <input
                             type="text"
                             name="tag"
                             value={formData.tag}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Max Guests</label>
+                        <label className="block text-sm font-medium">Max Guests</label>
                         <input
                             type="number"
                             name="maxGuests"
-                            required
                             min="1"
+                            required
                             value={formData.maxGuests}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700">Services (comma separated)</label>
+                        <label className="block text-sm font-medium">
+                            Services (comma separated)
+                        </label>
                         <input
                             type="text"
                             name="services"
                             value={formData.services}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700">Description</label>
+                        <label className="block text-sm font-medium">Description</label>
                         <textarea
-                            name="description"
                             rows={4}
+                            name="description"
                             required
                             value={formData.description}
                             onChange={handleChange}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-3 border"
+                            className="mt-1 w-full border p-3 rounded-md"
                         />
                     </div>
                 </div>
 
-                <div className="flex justify-end pt-4">
+                <div className="flex justify-end">
                     <button
                         type="submit"
                         disabled={submitting}
-                        className={`px-8 py-3 rounded-full text-white font-medium shadow-lg transition-all ${submitting ? "bg-gray-400" : "bg-black hover:bg-gray-800"
+                        className={`px-8 py-3 rounded-full text-white ${submitting ? "bg-gray-400" : "bg-black hover:bg-gray-800"
                             }`}
                     >
                         {submitting ? "Saving..." : "Save Changes"}

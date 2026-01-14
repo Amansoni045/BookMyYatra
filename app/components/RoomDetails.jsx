@@ -4,25 +4,33 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
+const BACKEND_URL =
+  process.env.NODE_ENV === "development"
+    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
+    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+
 const RoomDetails = () => {
   const { id } = useParams();
   const [room, setRoom] = useState(null);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
+    if (!id) return;
+
     const fetchRoom = async () => {
       try {
-        const res = await fetch(`${backendUrl}/api/hotels`);
+        const res = await fetch(`${BACKEND_URL}/api/hotels`);
         if (!res.ok) throw new Error("Failed to fetch hotels");
         const data = await res.json();
-        const foundRoom = data.find((hotel) => hotel.id.toString() === id);
+        const foundRoom = data.find(
+          (hotel) => hotel.id.toString() === id
+        );
         setRoom(foundRoom);
       } catch (err) {
-        console.error("Error fetching room details:", err);
+        console.error(err);
       }
     };
 
-    if (id) fetchRoom();
+    fetchRoom();
   }, [id]);
 
   if (!room) {
@@ -78,7 +86,7 @@ const RoomDetails = () => {
 
         <div className="mt-12 flex justify-center sm:justify-start">
           <Link href={`/ReviewYourBooking/${id}`}>
-            <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-lg py-3 px-6 rounded-full shadow-lg transition duration-300">
+            <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold text-lg py-3 px-6 rounded-full shadow-lg transition">
               Book Now
             </button>
           </Link>
