@@ -9,12 +9,7 @@ const AllRooms = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("");
 
-  const backendUrl =
-    process.env.NEXT_PUBLIC_BACKEND_URL ||
-    (process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_BACKEND_DEPLOYED_URL
-      : process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL) ||
-    "http://localhost:5001";
+  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
   useEffect(() => {
     const fetchHotels = async () => {

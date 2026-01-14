@@ -18,7 +18,7 @@ export default function AddHotelPage() {
         maxGuests: "",
     });
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     const handleChange = (e) => {
         const { name, value } = e.target;

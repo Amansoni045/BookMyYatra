@@ -6,7 +6,9 @@ export default function AdminHotels() {
   const [hotels, setHotels] = useState([]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/hotels`)
+    fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/hotels`, {
+      credentials: "include",
+    })
       .then((r) => r.json())
       .then(setHotels);
   }, []);

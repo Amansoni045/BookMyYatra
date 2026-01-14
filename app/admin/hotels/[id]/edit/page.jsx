@@ -20,12 +20,14 @@ export default function EditHotelPage() {
         maxGuests: "",
     });
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
 
     useEffect(() => {
         const fetchHotel = async () => {
             try {
-                const res = await fetch(`${backendUrl}/api/hotels/${id}`);
+                const res = await fetch(`${backendUrl}/api/hotels/${id}`, {
+                    credentials: "include",
+                });
                 if (!res.ok) throw new Error("Failed to fetch hotel");
                 const data = await res.json();
 

@@ -1,4 +1,5 @@
-const BASE_URL = "/api";
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const BASE_URL = `${BACKEND_URL}/api`;
 
 export const signup = async (data) => {
   const res = await fetch(`${BASE_URL}/signup`, {
