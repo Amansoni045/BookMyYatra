@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { BACKEND_URL } from "../../../lib/config";
 
 export default function AddHotelPage() {
     const router = useRouter();
@@ -18,8 +19,6 @@ export default function AddHotelPage() {
         maxGuests: "",
     });
 
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -30,12 +29,12 @@ export default function AddHotelPage() {
         setLoading(true);
 
         try {
-            const res = await fetch(`${backendUrl}/api/admin/hotels`, {
+            const res = await fetch(`${BACKEND_URL}/api/admin/hotels`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
-                credentials: "include",
                 body: JSON.stringify({
                     ...formData,
                     price: Number(formData.price),

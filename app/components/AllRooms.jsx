@@ -3,10 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-const BACKEND_URL =
-  process.env.NODE_ENV === "development"
-    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+import { BACKEND_URL } from "../lib/config";
 
 const AllRooms = () => {
   const [hotels, setHotels] = useState([]);

@@ -3,10 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 
-const BACKEND_URL =
-    process.env.NODE_ENV === "development"
-        ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-        : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+import { BACKEND_URL } from "../../../../lib/config";
 
 export default function EditHotelPage() {
     const router = useRouter();
@@ -32,9 +29,7 @@ export default function EditHotelPage() {
 
         const fetchHotel = async () => {
             try {
-                const res = await fetch(`${BACKEND_URL}/api/hotels/${id}`, {
-                    credentials: "include",
-                });
+                const res = await fetch(`${BACKEND_URL}/api/hotels/${id}`);
 
                 if (!res.ok) throw new Error("Failed to fetch hotel");
 
@@ -75,8 +70,10 @@ export default function EditHotelPage() {
         try {
             const res = await fetch(`${BACKEND_URL}/api/admin/hotels/${id}`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
                 body: JSON.stringify({
                     ...formData,
                     price: Number(formData.price),

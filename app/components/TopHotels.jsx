@@ -5,10 +5,7 @@ import Image from "next/image";
 import { Star, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-const BACKEND_URL =
-  process.env.NODE_ENV === "development"
-    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+import { BACKEND_URL } from "../lib/config";
 
 export default function TopHotels() {
   const [hotels, setHotels] = useState([]);

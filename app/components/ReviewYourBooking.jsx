@@ -4,10 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
-const BACKEND_URL =
-  process.env.NODE_ENV === "development"
-    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+import { BACKEND_URL } from "../lib/config";
 
 const ReviewYourBooking = () => {
   const { id } = useParams();

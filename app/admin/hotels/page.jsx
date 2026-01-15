@@ -2,26 +2,27 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const BACKEND_URL =
-  process.env.NODE_ENV === "development"
-    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+import { BACKEND_URL } from "../../lib/config";
 
 export default function AdminHotels() {
   const [hotels, setHotels] = useState([]);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/api/hotels`, {
-      credentials: "include",
-    })
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    fetch(`${BACKEND_URL}/api/hotels`, { headers })
       .then((r) => r.json())
-      .then(setHotels);
+      .then(setHotels)
+      .catch((err) => console.error("Failed to fetch hotels:", err));
   }, []);
 
   const del = async (id) => {
     await fetch(`${BACKEND_URL}/api/admin/hotels/${id}`, {
       method: "DELETE",
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
     });
 
     setHotels((prev) => prev.filter((h) => h.id !== id));

@@ -1,35 +1,64 @@
-const BACKEND_URL =
-  process.env.NODE_ENV === "development"
-    ? process.env.NEXT_PUBLIC_BACKEND_LOCAL_URL
-    : process.env.NEXT_PUBLIC_BACKEND_PROD_URL;
+import { BACKEND_URL } from "./config";
 
 const BASE_URL = `${BACKEND_URL}/api`;
+
+// Helper to get token safely
+const getToken = () => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("token");
+  }
+  return null;
+};
 
 export const signup = async (data) => {
   const res = await fetch(`${BASE_URL}/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(data),
   });
-  return res.json();
+
+  const json = await res.json();
+
+  if (res.ok && json.token) {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", json.token);
+      window.dispatchEvent(new Event("auth-change"));
+    }
+  }
+
+  return json;
 };
 
 export const login = async (data) => {
   const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(data),
   });
-  return res.json();
+
+  const json = await res.json();
+
+  if (res.ok && json.token) {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", json.token);
+      window.dispatchEvent(new Event("auth-change"));
+    }
+  }
+
+  return json;
 };
 
 export const getMe = async () => {
   try {
+    const token = getToken();
+    if (!token) return null;
+
     const res = await fetch(`${BASE_URL}/me`, {
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     if (!res.ok) return null;
     return res.json();
   } catch {
@@ -38,8 +67,18 @@ export const getMe = async () => {
 };
 
 export const logout = async () => {
-  await fetch(`${BASE_URL}/logout`, {
-    method: "POST",
-    credentials: "include",
-  });
+  // Clear local storage first
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("token");
+    window.dispatchEvent(new Event("auth-change"));
+  }
+
+  // Optional: Notify backend
+  try {
+    await fetch(`${BASE_URL}/logout`, {
+      method: "POST",
+    });
+  } catch (err) {
+    console.error("Logout error", err);
+  }
 };
