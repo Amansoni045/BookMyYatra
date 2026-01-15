@@ -3,12 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { getMe, logout } from "@/app/lib/auth";
+import { useAuth } from "@/app/lib/AuthContext";
 
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const isHotelsPage = pathname.startsWith("/hotels");
+  const { user, loading, logout } = useAuth();
 
   const navLinks = [
     { label: "Home", url: "/" },
@@ -17,24 +18,6 @@ const Navbar = () => {
 
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUser = () => {
-      getMe()
-        .then((data) => {
-          if (data?.name) setUser(data);
-          else setUser(null);
-        })
-        .finally(() => setLoading(false));
-    };
-
-    fetchUser();
-
-    window.addEventListener("auth-change", fetchUser);
-    return () => window.removeEventListener("auth-change", fetchUser);
-  }, []);
 
   useEffect(() => {
     if (!isHotelsPage) {
@@ -48,7 +31,6 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await logout();
-    setUser(null);
     router.push("/");
   };
 
@@ -65,13 +47,11 @@ const Navbar = () => {
           <img
             src="/Assets/logo.png"
             alt="Logo"
-            className={`h-16 transition-all duration-500 ${
-              isSolid ? "invert opacity-80" : ""
-            }`}
+            className={`h-16 transition-all duration-500 ${isSolid ? "invert opacity-80" : ""
+              }`}
           />
         </Link>
 
-        {/* DESKTOP LINKS */}
         <div className="hidden md:flex gap-12 items-center">
           {navLinks.map((link) => (
             <Link
@@ -90,7 +70,6 @@ const Navbar = () => {
             </Link>
           ))}
 
-          {/* 🔥 ADMIN PANEL LINK (ROLE BASED) */}
           {!loading && user?.role === "ADMIN" && (
             <Link
               href="/admin/dashboard"
@@ -105,7 +84,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* DESKTOP AUTH */}
         <div className="hidden md:flex items-center gap-4">
           {!loading && user ? (
             <>
@@ -118,9 +96,8 @@ const Navbar = () => {
               </div>
 
               <span
-                className={`font-medium ${
-                  isSolid ? "text-gray-800" : "text-white"
-                }`}
+                className={`font-medium ${isSolid ? "text-gray-800" : "text-white"
+                  }`}
               >
                 {user.name}
               </span>
@@ -159,13 +136,11 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* MOBILE MENU ICON */}
         <div className="md:hidden">
           <svg
             onClick={() => setMenuOpen(true)}
-            className={`h-7 w-7 cursor-pointer ${
-              isSolid ? "text-gray-800" : "text-white"
-            }`}
+            className={`h-7 w-7 cursor-pointer ${isSolid ? "text-gray-800" : "text-white"
+              }`}
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -178,7 +153,6 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* MOBILE MENU */}
       <div
         className={`fixed inset-0 z-50 bg-white/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8 transition-transform duration-500
           ${menuOpen ? "translate-x-0" : "-translate-x-full"}
@@ -202,7 +176,6 @@ const Navbar = () => {
           </Link>
         ))}
 
-        {/* 🔥 MOBILE ADMIN LINK */}
         {!loading && user?.role === "ADMIN" && (
           <Link
             href="/admin/dashboard"

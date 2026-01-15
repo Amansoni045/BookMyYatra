@@ -2,7 +2,6 @@ import { BACKEND_URL } from "./config";
 
 const BASE_URL = `${BACKEND_URL}/api`;
 
-// Helper to get token safely
 const getToken = () => {
   if (typeof window !== "undefined") {
     return localStorage.getItem("token");
@@ -11,6 +10,7 @@ const getToken = () => {
 };
 
 export const signup = async (data) => {
+  console.log("🌐 API: Signup request to:", `${BASE_URL}/signup`);
   const res = await fetch(`${BASE_URL}/signup`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -18,11 +18,12 @@ export const signup = async (data) => {
   });
 
   const json = await res.json();
+  console.log("🌐 API: Signup response status:", res.status, "data:", json);
 
   if (res.ok && json.token) {
     if (typeof window !== "undefined") {
       localStorage.setItem("token", json.token);
-      window.dispatchEvent(new Event("auth-change"));
+      console.log("💾 Token saved to localStorage");
     }
   }
 
@@ -30,6 +31,7 @@ export const signup = async (data) => {
 };
 
 export const login = async (data) => {
+  console.log("🌐 API: Login request to:", `${BASE_URL}/login`);
   const res = await fetch(`${BASE_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,11 +39,12 @@ export const login = async (data) => {
   });
 
   const json = await res.json();
+  console.log("🌐 API: Login response status:", res.status, "data:", json);
 
   if (res.ok && json.token) {
     if (typeof window !== "undefined") {
       localStorage.setItem("token", json.token);
-      window.dispatchEvent(new Event("auth-change"));
+      console.log("💾 Token saved to localStorage");
     }
   }
 
@@ -51,7 +54,12 @@ export const login = async (data) => {
 export const getMe = async () => {
   try {
     const token = getToken();
-    if (!token) return null;
+    console.log("🌐 API: getMe request, token exists:", !!token);
+
+    if (!token) {
+      console.log("⚠️ No token found in localStorage");
+      return null;
+    }
 
     const res = await fetch(`${BASE_URL}/me`, {
       headers: {
@@ -59,21 +67,27 @@ export const getMe = async () => {
       },
     });
 
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
+    console.log("🌐 API: getMe response status:", res.status);
+
+    if (!res.ok) {
+      console.log("❌ getMe failed with status:", res.status);
+      return null;
+    }
+
+    const data = await res.json();
+    console.log("✅ User data fetched:", data);
+    return data;
+  } catch (error) {
+    console.error("❌ getMe error:", error);
     return null;
   }
 };
 
 export const logout = async () => {
-  // Clear local storage first
   if (typeof window !== "undefined") {
     localStorage.removeItem("token");
-    window.dispatchEvent(new Event("auth-change"));
   }
 
-  // Optional: Notify backend
   try {
     await fetch(`${BASE_URL}/logout`, {
       method: "POST",

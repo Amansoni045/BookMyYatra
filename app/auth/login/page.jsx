@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { login } from "@/app/lib/auth";
+import { useAuth } from "@/app/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,19 +18,21 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
+    console.log("📧 Login form submitted:", { email: form.email });
 
     try {
       const res = await login(form);
+      console.log("📥 Login result:", res);
 
-      if (res?.id) {
-        window.dispatchEvent(new Event("auth-change"));
-        setTimeout(() => {
-          router.push("/");
-        }, 2000);
+      if (res?.id || res?.token) {
+        console.log("✅ Login successful, redirecting...");
+        router.push("/");
       } else {
+        console.error("❌ Login failed:", res);
         setError(res?.message || "Login failed.");
       }
     } catch (err) {
+      console.error("❌ Login exception:", err);
       setError("Something went wrong.");
     } finally {
       setLoading(false);

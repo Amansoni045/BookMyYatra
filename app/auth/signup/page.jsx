@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { signup } from "@/app/lib/auth";
+import { useAuth } from "@/app/lib/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
     const router = useRouter();
+    const { signup } = useAuth();
     const [form, setForm] = useState({ name: "", email: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -17,18 +18,22 @@ export default function SignupPage() {
         e.preventDefault();
         setLoading(true);
         setError("");
+        console.log("📝 Signup form submitted:", { email: form.email, name: form.name });
 
         try {
             const res = await signup(form);
-            if (res?.id) {
-                window.dispatchEvent(new Event("auth-change"));
+            console.log("📥 Signup result:", res);
+
+            if (res?.id || res?.token) {
+                console.log("✅ Signup successful, redirecting...");
                 router.push("/");
             } else {
-                setError(res?.message || "Signup failed. Please try again.");
+                console.error("❌ Signup failed:", res);
+                setError(res?.message || "Signup failed.");
             }
         } catch (err) {
-            console.error("Signup error:", err);
-            setError("An unexpected error occurred. Please try again.");
+            console.error("❌ Signup exception:", err);
+            setError("Something went wrong.");
         } finally {
             setLoading(false);
         }
