@@ -19,15 +19,17 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const isAdminPage = pathname.startsWith("/admin");
+
   useEffect(() => {
-    if (!isHotelsPage) {
+    if (!isHotelsPage && !isAdminPage) {
       const handleScroll = () => setScrolled(window.scrollY > 15);
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
     }
-  }, [isHotelsPage]);
+  }, [isHotelsPage, isAdminPage]);
 
-  const isSolid = isHotelsPage || scrolled;
+  const isSolid = isHotelsPage || isAdminPage || scrolled;
 
   const handleLogout = async () => {
     await logout();
@@ -38,7 +40,7 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 w-full z-50 transition-all duration-500
         ${isSolid
-          ? "bg-white/85 backdrop-blur-xl shadow-lg"
+          ? "bg-white shadow-lg"
           : "bg-transparent py-5"}
       `}
     >

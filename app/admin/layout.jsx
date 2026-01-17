@@ -2,29 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getMe } from "@/app/lib/auth";
+import { useAuth } from "@/app/lib/AuthContext";
 import Sidebar from "./components/Sidebar";
 
 export default function AdminLayout({ children }) {
+    const { user, loading } = useAuth();
     const router = useRouter();
-    const [loading, setLoading] = useState(true);
+    const [ready, setReady] = useState(false);
 
     useEffect(() => {
-        getMe().then((user) => {
+        if (!loading) {
             if (!user || user.role !== "ADMIN") {
                 router.replace("/");
             } else {
-                setLoading(false);
+                setReady(true);
             }
-        });
-    }, []);
+        }
+    }, [user, loading, router]);
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center">Checking admin access...</div>;
+    if (!ready) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-gray-600">
+                Checking admin access...
+            </div>
+        );
+    }
 
     return (
-        <div className="flex min-h-screen pt-20">
+        <div className="flex min-h-screen pt-20 bg-white">
             <Sidebar />
-            <main className="flex-1 p-8 bg-gray-50">
+            <main className="flex-1 bg-gray-50 p-10">
                 {children}
             </main>
         </div>
