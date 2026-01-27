@@ -45,7 +45,7 @@ const AllRooms = () => {
   };
 
   return (
-    <div className="bg-white text-black min-h-screen px-4 md:px-16 lg:px-24 xl:px-32 pt-28">
+    <div className="bg-white text-black min-h-screen px-4 md:px-16 lg:px-24 xl:px-32 pt-28 pb-16">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-playfair font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
           Hotel Rooms
@@ -78,8 +78,8 @@ const AllRooms = () => {
                   <button
                     onClick={() => applyFilter("rating")}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedFilter === "rating"
-                        ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                   >
                     ⭐ By Rating
@@ -87,8 +87,8 @@ const AllRooms = () => {
                   <button
                     onClick={() => applyFilter("price")}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedFilter === "price"
-                        ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                   >
                     💰 By Price
@@ -96,8 +96,8 @@ const AllRooms = () => {
                   <button
                     onClick={() => applyFilter("tag")}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${selectedFilter === "tag"
-                        ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-md"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                   >
                     🏷️ Tagged Only
