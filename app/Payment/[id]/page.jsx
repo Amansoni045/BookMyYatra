@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getMe } from "@/app/lib/auth"; 
+import { getMe } from "@/app/lib/auth";
+import Payment from "@/app/components/Payment";
 
 export default function PaymentPage() {
   const router = useRouter();
