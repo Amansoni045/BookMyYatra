@@ -8,7 +8,7 @@ import { useAuth } from "@/app/lib/AuthContext";
 const Navbar = () => {
   const pathname = usePathname();
   const router = useRouter();
-  const isHotelsPage = pathname.startsWith("/hotels");
+  const isHomePage = pathname === "/";
   const { user, loading, logout } = useAuth();
 
   const navLinks = [
@@ -19,17 +19,15 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isAdminPage = pathname.startsWith("/admin");
-
   useEffect(() => {
-    if (!isHotelsPage && !isAdminPage) {
+    if (isHomePage) {
       const handleScroll = () => setScrolled(window.scrollY > 15);
       window.addEventListener("scroll", handleScroll);
       return () => window.removeEventListener("scroll", handleScroll);
     }
-  }, [isHotelsPage, isAdminPage]);
+  }, [isHomePage]);
 
-  const isSolid = isHotelsPage || isAdminPage || scrolled;
+  const isSolid = !isHomePage || scrolled;
 
   const handleLogout = async () => {
     await logout();
