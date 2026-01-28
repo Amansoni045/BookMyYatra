@@ -2,31 +2,38 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-
 import { BACKEND_URL } from "../lib/config";
 
 const Payment = () => {
   const { id } = useParams();
   const router = useRouter();
+
   const [room, setRoom] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [paymentDone, setPaymentDone] = useState(false);
+  const [bookingId, setBookingId] = useState("");
 
-  // Card details
   const [cardNumber, setCardNumber] = useState("");
   const [cardName, setCardName] = useState("");
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [saveCard, setSaveCard] = useState(false);
 
-  // UPI details
   const [upiId, setUpiId] = useState("");
-
-  // Net banking
   const [selectedBank, setSelectedBank] = useState("");
 
   const [errors, setErrors] = useState({});
   const [processing, setProcessing] = useState(false);
+  const [isLegitimatePayment, setIsLegitimatePayment] = useState(false);
+
+  const popularBanks = [
+    { name: "HDFC Bank", logo: "🏦" },
+    { name: "ICICI Bank", logo: "🏦" },
+    { name: "SBI", logo: "🏦" },
+    { name: "Axis Bank", logo: "🏦" },
+    { name: "Kotak Mahindra", logo: "🏦" },
+    { name: "Punjab National Bank", logo: "🏦" }
+  ];
 
   useEffect(() => {
     if (!id) return;
@@ -47,28 +54,28 @@ const Payment = () => {
     fetchRoom();
   }, [id]);
 
+  useEffect(() => {
+    const paymentSession = sessionStorage.getItem(`payment_${id}`);
+    if (paymentSession === "completed") {
+      setIsLegitimatePayment(true);
+      setPaymentDone(true);
+    }
+  }, [id]);
+
   const formatCardNumber = (value) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
     const matches = v.match(/\d{4,16}/g);
     const match = (matches && matches[0]) || "";
     const parts = [];
-
-    for (let i = 0, len = match.length; i < len; i += 4) {
+    for (let i = 0; i < match.length; i += 4) {
       parts.push(match.substring(i, i + 4));
     }
-
-    if (parts.length) {
-      return parts.join(" ");
-    } else {
-      return value;
-    }
+    return parts.join(" ");
   };
 
   const formatExpiryDate = (value) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "");
-    if (v.length >= 2) {
-      return v.slice(0, 2) + "/" + v.slice(2, 4);
-    }
+    const v = value.replace(/\D/g, "");
+    if (v.length >= 2) return v.slice(0, 2) + "/" + v.slice(2, 4);
     return v;
   };
 
@@ -84,27 +91,21 @@ const Payment = () => {
     const newErrors = {};
 
     if (paymentMethod === "card") {
-      if (!cardNumber || cardNumber.replace(/\s/g, "").length < 13) {
+      if (!cardNumber || cardNumber.replace(/\s/g, "").length < 13)
         newErrors.cardNumber = "Please enter a valid card number";
-      }
-      if (!cardName || cardName.trim().length < 3) {
+      if (!cardName || cardName.trim().length < 3)
         newErrors.cardName = "Please enter cardholder name";
-      }
-      if (!expiryDate || expiryDate.length !== 5) {
-        newErrors.expiryDate = "Please enter valid expiry date (MM/YY)";
-      }
-      if (!cvv || cvv.length < 3) {
-        newErrors.cvv = "Please enter valid CVV";
-      }
-    } else if (paymentMethod === "upi") {
-      if (!upiId || !upiId.includes("@")) {
-        newErrors.upiId = "Please enter a valid UPI ID";
-      }
-    } else if (paymentMethod === "netbanking") {
-      if (!selectedBank) {
-        newErrors.selectedBank = "Please select a bank";
-      }
+      if (!expiryDate || expiryDate.length !== 5)
+        newErrors.expiryDate = "Invalid expiry date";
+      if (!cvv || cvv.length < 3)
+        newErrors.cvv = "Invalid CVV";
     }
+
+    if (paymentMethod === "upi" && (!upiId || !upiId.includes("@")))
+      newErrors.upiId = "Invalid UPI ID";
+
+    if (paymentMethod === "netbanking" && !selectedBank)
+      newErrors.selectedBank = "Select a bank";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -115,19 +116,84 @@ const Payment = () => {
 
     setProcessing(true);
 
-    // Simulate payment processing
-    setTimeout(() => {
+    const generatedBookingId =
+      "BMY" + Date.now().toString().slice(-8);
+    setBookingId(generatedBookingId);
+
+    setTimeout(async () => {
       setProcessing(false);
       setPaymentDone(true);
+
+      setCardNumber("");
+      setCardName("");
+      setExpiryDate("");
+      setCvv("");
+      setUpiId("");
+      setSelectedBank("");
+
+      sessionStorage.setItem(`payment_${id}`, "completed");
+
+      try {
+        await fetch(
+          `${BACKEND_URL}/api/notifications/notify`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: "amansoni.pali001@gmail.com",
+              phone: "+917770889004",
+              bookingId: generatedBookingId,
+              hotel: room.name,
+              amount: totalPrice,
+            }),
+          }
+        );
+      } catch (err) {
+        console.error("Notification failed", err);
+      }
     }, 2000);
   };
+
+  useEffect(() => {
+    if (paymentDone) {
+      window.history.pushState(null, "", window.location.href);
+
+      const handlePopState = () => {
+        window.history.pushState(null, "", window.location.href);
+      };
+
+      window.addEventListener("popstate", handlePopState);
+
+      return () => {
+        window.removeEventListener("popstate", handlePopState);
+      };
+    }
+  }, [paymentDone]);
+
+  useEffect(() => {
+    if (processing) {
+      const handleBeforeUnload = (e) => {
+        e.preventDefault();
+        e.returnValue = "Payment is being processed. Are you sure you want to leave?";
+        return e.returnValue;
+      };
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+      };
+    }
+  }, [processing]);
 
   if (!room) {
     return (
       <div className="min-h-screen flex items-center justify-center pt-24">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-lg font-medium text-gray-600">Loading payment details...</p>
+          <div className="animate-spin h-12 w-12 border-b-2 border-blue-600 rounded-full mx-auto"></div>
+          <p className="mt-4 text-gray-600">
+            Preparing secure payment...
+          </p>
         </div>
       </div>
     );
@@ -139,66 +205,68 @@ const Payment = () => {
   const serviceFee = Math.round(basePrice * 0.05);
   const totalPrice = basePrice + taxesAndFees + serviceFee;
 
-  const popularBanks = [
-    { name: "HDFC Bank", logo: "🏦" },
-    { name: "ICICI Bank", logo: "🏦" },
-    { name: "SBI", logo: "🏦" },
-    { name: "Axis Bank", logo: "🏦" },
-    { name: "Kotak Bank", logo: "🏦" },
-    { name: "PNB", logo: "🏦" },
-  ];
-
   if (paymentDone) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-green-50 to-white pt-24 pb-16">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 text-center">
+        <div className="max-w-2xl mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg className="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-12 h-12 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-3">Payment Successful!</h1>
-            <p className="text-lg text-gray-600 mb-8">Your booking has been confirmed</p>
 
-            <div className="bg-gray-50 rounded-xl p-6 mb-8 text-left">
-              <h3 className="font-bold text-gray-900 mb-4">Booking Details</h3>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Hotel:</span>
-                  <span className="font-semibold text-gray-900">{room.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Location:</span>
-                  <span className="font-semibold text-gray-900">{room.location}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount Paid:</span>
-                  <span className="font-semibold text-green-600">₹{totalPrice}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Booking ID:</span>
-                  <span className="font-semibold text-gray-900">BMY{Date.now().toString().slice(-8)}</span>
-                </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              Payment Successful 🎉
+            </h1>
+
+            <p className="text-gray-600 mb-8">
+              Your booking is confirmed. We've sent the complete
+              booking details to your email and mobile number so
+              you can relax and enjoy your stay.
+            </p>
+
+            <div className="bg-gray-50 rounded-xl p-6 text-left mb-8">
+              <div className="flex justify-between text-sm">
+                <span>Hotel</span>
+                <span className="font-semibold">{room.name}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Location</span>
+                <span className="font-semibold">{room.location}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Booking ID</span>
+                <span className="font-semibold">{bookingId}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>Amount Paid</span>
+                <span className="font-semibold text-green-600">
+                  ₹{totalPrice}
+                </span>
               </div>
             </div>
 
-            <div className="bg-blue-50 border-l-4 border-blue-600 rounded-r-xl p-4 mb-8 text-left">
-              <p className="text-sm text-blue-900">
-                ✉️ A confirmation email has been sent to your registered email address with all booking details.
-              </p>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex gap-4">
               <button
                 onClick={() => router.push("/")}
-                className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300"
+                className="flex-1 bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700"
               >
-                Go to Home
+                Back to Home
               </button>
               <button
                 onClick={() => window.print()}
-                className="flex-1 border-2 border-gray-300 hover:border-gray-400 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-all duration-300"
+                className="flex-1 border py-3 rounded-xl"
               >
                 Download Receipt
               </button>
@@ -212,16 +280,13 @@ const Payment = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Secure Payment</h1>
           <p className="text-gray-600">Complete your booking with our secure payment gateway</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Payment Methods */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Security Badge */}
             <div className="bg-green-50 border border-green-200 rounded-xl p-4 flex items-center gap-3">
               <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -232,15 +297,14 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Payment Method Tabs */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="border-b border-gray-200">
                 <div className="flex">
                   <button
                     onClick={() => setPaymentMethod("card")}
                     className={`flex-1 py-4 px-6 font-semibold transition-colors ${paymentMethod === "card"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                       }`}
                   >
                     💳 Card
@@ -248,8 +312,8 @@ const Payment = () => {
                   <button
                     onClick={() => setPaymentMethod("upi")}
                     className={`flex-1 py-4 px-6 font-semibold transition-colors ${paymentMethod === "upi"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                       }`}
                   >
                     📱 UPI
@@ -257,8 +321,8 @@ const Payment = () => {
                   <button
                     onClick={() => setPaymentMethod("netbanking")}
                     className={`flex-1 py-4 px-6 font-semibold transition-colors ${paymentMethod === "netbanking"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-50 text-gray-600 hover:bg-gray-100"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-50 text-gray-600 hover:bg-gray-100"
                       }`}
                   >
                     🏦 Net Banking
@@ -267,7 +331,6 @@ const Payment = () => {
               </div>
 
               <div className="p-6 md:p-8">
-                {/* Card Payment */}
                 {paymentMethod === "card" && (
                   <div className="space-y-6">
                     <div>
@@ -356,7 +419,6 @@ const Payment = () => {
                   </div>
                 )}
 
-                {/* UPI Payment */}
                 {paymentMethod === "upi" && (
                   <div className="space-y-6">
                     <div>
@@ -392,7 +454,6 @@ const Payment = () => {
                   </div>
                 )}
 
-                {/* Net Banking */}
                 {paymentMethod === "netbanking" && (
                   <div className="space-y-6">
                     <div>
@@ -403,8 +464,8 @@ const Payment = () => {
                             key={bank.name}
                             onClick={() => setSelectedBank(bank.name)}
                             className={`p-4 border-2 rounded-xl transition-all ${selectedBank === bank.name
-                                ? "border-blue-600 bg-blue-50"
-                                : "border-gray-200 hover:border-blue-300"
+                              ? "border-blue-600 bg-blue-50"
+                              : "border-gray-200 hover:border-blue-300"
                               }`}
                           >
                             <div className="text-3xl mb-2">{bank.logo}</div>
@@ -437,7 +498,6 @@ const Payment = () => {
               </div>
             </div>
 
-            {/* Payment Partners */}
             <div className="bg-gray-50 rounded-xl p-4 flex items-center justify-center gap-6 flex-wrap">
               <span className="text-sm text-gray-600">Secured by:</span>
               <div className="flex items-center gap-4">
@@ -448,14 +508,13 @@ const Payment = () => {
             </div>
           </div>
 
-          {/* Order Summary Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-28">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
 
               <div className="mb-6">
                 <img
-                  src={room.image}
+                  src={room.image || "/placeholder.jpg"}
                   alt={room.name}
                   className="w-full h-40 object-cover rounded-xl mb-4"
                 />

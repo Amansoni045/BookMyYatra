@@ -46,7 +46,6 @@ export default function EditHotelPage() {
         setSaving(true);
 
         try {
-            // Convert numeric fields to numbers
             const payload = {
                 ...data,
                 price: Number(data.price),

@@ -61,7 +61,6 @@ const RoomDetails = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-16">
-      {/* Hero Image Section */}
       <div className="w-full h-[400px] md:h-[500px] overflow-hidden relative">
         <img
           src={room.image}
@@ -77,10 +76,8 @@ const RoomDetails = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
-        {/* Main Content Card */}
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           <div className="p-6 md:p-10">
-            {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 mb-8">
               <div className="flex-1">
                 <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 mb-3">
@@ -108,7 +105,6 @@ const RoomDetails = () => {
                 </div>
               </div>
 
-              {/* Price Card */}
               <div className="lg:w-80 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
                 <div className="text-center">
                   <p className="text-gray-600 text-sm mb-1">Starting from</p>
@@ -127,13 +123,11 @@ const RoomDetails = () => {
               </div>
             </div>
 
-            {/* Description */}
             <div className="mb-10">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Property</h2>
               <p className="text-gray-700 leading-relaxed text-lg">{room.description}</p>
             </div>
 
-            {/* Amenities */}
             <div className="mb-10">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Amenities & Facilities</h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -146,7 +140,6 @@ const RoomDetails = () => {
               </div>
             </div>
 
-            {/* Services */}
             {room.services && (
               <div className="mb-10">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">Services Included</h2>
@@ -156,7 +149,6 @@ const RoomDetails = () => {
               </div>
             )}
 
-            {/* Why Book With Us */}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Why Book With Us?</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">

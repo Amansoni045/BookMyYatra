@@ -21,11 +21,10 @@ export default function AddHotelPage() {
     const handleChange = (e) => {
         const { name, value } = e.target;
 
-        // Validate rating to be between 0 and 5
         if (name === "rating") {
             const numValue = parseFloat(value);
             if (value !== "" && (numValue < 0 || numValue > 5)) {
-                return; // Don't update if out of range
+                return;
             }
         }
 

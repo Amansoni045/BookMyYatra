@@ -32,7 +32,6 @@ const ReviewYourBooking = () => {
 
     fetchRoom();
 
-    // Set default dates (tomorrow and day after)
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const dayAfter = new Date();
@@ -71,16 +70,13 @@ const ReviewYourBooking = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Review Your Booking</h1>
           <p className="text-gray-600">Please review your booking details before proceeding to payment</p>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Hotel Details Card */}
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
               <div className="grid md:grid-cols-3 gap-6 p-6">
                 <div className="md:col-span-1">
@@ -118,7 +114,6 @@ const ReviewYourBooking = () => {
               </div>
             </div>
 
-            {/* Booking Details Card */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Booking Details</h3>
               <div className="grid sm:grid-cols-2 gap-6">
@@ -173,7 +168,6 @@ const ReviewYourBooking = () => {
               </div>
             </div>
 
-            {/* Important Information */}
             <div className="bg-amber-50 border-l-4 border-amber-500 rounded-r-2xl p-6">
               <h3 className="text-lg font-bold text-amber-900 mb-3 flex items-center gap-2">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -202,7 +196,6 @@ const ReviewYourBooking = () => {
             </div>
           </div>
 
-          {/* Price Summary Sidebar */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-28">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Price Summary</h3>
