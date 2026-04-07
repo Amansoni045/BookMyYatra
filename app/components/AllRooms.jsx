@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import useSWR from "swr";
+import { useSearchParams, useRouter } from "next/navigation";
+import Fuse from "fuse.js";
 
 import { BACKEND_URL } from "../lib/config";
 
@@ -10,6 +13,10 @@ const AllRooms = () => {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [showFilters, setShowFilters] = useState(false);
   const [isApplying, setIsApplying] = useState(false);
+
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const locationQuery = searchParams.get("location") || "";
 
   const [tempFilters, setTempFilters] = useState({
     sortByRating: false,
@@ -23,22 +30,29 @@ const AllRooms = () => {
     showTaggedOnly: false,
   });
 
+  const fetcher = (url) => fetch(url).then((res) => res.json());
+
+  const { data: hotelsData, error, isLoading } = useSWR(`${BACKEND_URL}/api/hotels`, fetcher, {
+    revalidateOnFocus: false,
+  });
+
   useEffect(() => {
-    const fetchHotels = async () => {
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/hotels`);
-        if (!res.ok) throw new Error("Failed to fetch hotels");
-
-        const data = await res.json();
-        setHotels(data);
-        setFilteredHotels(data);
-      } catch (error) {
-        console.error("Failed to fetch hotels:", error);
+    if (hotelsData) {
+      setHotels(hotelsData);
+      let updatedList = [...hotelsData];
+      if (locationQuery) {
+        const fuse = new Fuse(hotelsData, {
+          keys: ['location'],
+          threshold: 0.5,
+          distance: 100,
+          ignoreLocation: true,
+        });
+        const results = fuse.search(locationQuery);
+        updatedList = results.map(result => result.item);
       }
-    };
-
-    fetchHotels();
-  }, []);
+      setFilteredHotels(updatedList);
+    }
+  }, [hotelsData, locationQuery]);
 
   const handleFilterChange = (filterName) => {
     setTempFilters(prev => ({
@@ -52,6 +66,17 @@ const AllRooms = () => {
 
     setTimeout(() => {
       let updatedList = [...hotels];
+
+      if (locationQuery) {
+        const fuse = new Fuse(hotels, {
+          keys: ['location'],
+          threshold: 0.6,
+          distance: 100,
+          ignoreLocation: true,
+        });
+        const results = fuse.search(locationQuery);
+        updatedList = results.map(result => result.item);
+      }
 
       if (tempFilters.showTaggedOnly) {
         updatedList = updatedList.filter((hotel) => hotel.tag);
@@ -81,7 +106,19 @@ const AllRooms = () => {
       sortByPrice: false,
       showTaggedOnly: false,
     });
-    setFilteredHotels(hotels);
+
+    let updatedList = [...hotels];
+    if (locationQuery) {
+      const fuse = new Fuse(hotels, {
+        keys: ['location'],
+        threshold: 0.6,
+        distance: 100,
+        ignoreLocation: true,
+      });
+      const results = fuse.search(locationQuery);
+      updatedList = results.map(result => result.item);
+    }
+    setFilteredHotels(updatedList);
     setShowFilters(false);
   };
 
@@ -92,7 +129,7 @@ const AllRooms = () => {
     <div className="bg-white text-black min-h-screen px-4 md:px-16 lg:px-24 xl:px-32 pt-28 pb-16">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-4xl font-playfair font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-          Hotel Rooms
+          {locationQuery ? `Hotels in ${locationQuery}` : "Hotel Rooms"}
         </h1>
 
         <div className="relative">
@@ -211,33 +248,85 @@ const AllRooms = () => {
       </div>
 
       <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 transition-opacity duration-300 ${isApplying ? 'opacity-50' : 'opacity-100'}`}>
-        {filteredHotels.map((hotel, index) => (
-          <div
-            key={hotel.id}
-            className="border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 animate-fadeInUp"
-            style={{ animationDelay: `${index * 50}ms` }}
-          >
-            <Image
-              src={hotel.image}
-              alt={hotel.name}
-              width={400}
-              height={300}
-              className="h-48 w-full object-cover"
-            />
-
-            <div className="p-4">
-              <h3 className="font-semibold text-lg">{hotel.name}</h3>
-              <p className="text-sm text-gray-500">{hotel.location}</p>
-              <p className="mt-2 font-medium">₹{hotel.price}/night</p>
-
-              <Link href={`/RoomDetails/${hotel.id}`}>
-                <button className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition-colors">
-                  View Details
-                </button>
-              </Link>
+        {isLoading ? (
+          Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="border border-gray-200 rounded-3xl overflow-hidden shadow-sm bg-white flex flex-col relative animate-pulse">
+              <div className="h-56 bg-gray-200 w-full"></div>
+              <div className="p-5 flex flex-col flex-grow">
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-3"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="flex-grow"></div>
+                <div className="flex justify-between items-end border-t border-gray-100 pt-4 mt-auto">
+                  <div>
+                    <div className="h-3 bg-gray-200 rounded w-16 mb-2"></div>
+                    <div className="h-6 bg-gray-200 rounded w-24"></div>
+                  </div>
+                  <div className="h-10 bg-gray-200 rounded-xl w-28"></div>
+                </div>
+              </div>
             </div>
+          ))
+        ) : filteredHotels.length === 0 ? (
+          <div className="col-span-full py-16 flex flex-col items-center justify-center text-center bg-gray-50 rounded-3xl border border-gray-200">
+            <div className="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center text-blue-600 mb-6">
+              <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.88 9.88l4.24 4.24"></path></svg>
+            </div>
+            <h3 className="text-3xl font-black text-gray-900 mb-3">We couldn't find any stays in "{locationQuery}"</h3>
+            <p className="text-gray-500 font-medium max-w-lg mb-8 text-lg">Try checking your spelling, or exploring our other popular destinations.</p>
+            <button onClick={() => router.push('/hotels')} className="bg-[#006CE4] hover:bg-[#0057B8] text-white font-bold py-3 px-8 rounded-xl transition-colors shadow-md">
+              Clear Search & View All Hotels
+            </button>
           </div>
-        ))}
+        ) : (
+          filteredHotels.map((hotel, index) => (
+            <div
+              key={hotel.id}
+              className="border border-gray-200 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 animate-fadeInUp bg-white flex flex-col group relative"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              {/* Image Container */}
+              <div className="relative h-56 overflow-hidden">
+                <img
+                  src={hotel.image}
+                  alt={hotel.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                />
+                {hotel.tag && (
+                  <span className="absolute top-4 left-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                    {hotel.tag.toUpperCase()}
+                  </span>
+                )}
+                <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-md text-white text-sm font-bold px-3 py-1.5 rounded-xl shadow-lg flex items-center gap-1 border border-white/20">
+                  ⭐ {hotel.rating}
+                </div>
+              </div>
+
+              {/* Details Container */}
+              <div className="p-5 flex flex-col flex-grow">
+                <h3 className="font-extrabold text-xl text-gray-900 group-hover:text-blue-600 transition-colors mb-1 truncate">{hotel.name}</h3>
+                <p className="text-sm text-gray-500 font-semibold flex items-center gap-1 mb-4 truncate">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                  {hotel.location}
+                </p>
+
+                <div className="flex-grow"></div>
+
+                <div className="flex justify-between items-end border-t border-gray-100 pt-4 mt-auto">
+                  <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wide">Starting from</p>
+                    <p className="text-2xl font-black text-gray-900 leading-none mt-1">₹{hotel.price}<span className="text-sm font-medium text-gray-500"> / night</span></p>
+                  </div>
+
+                  <Link href={`/RoomDetails/${hotel.id}`}>
+                    <button className="bg-gradient-to-r from-blue-600 to-[#003B95] hover:opacity-90 text-white font-bold py-2.5 px-6 rounded-xl transition-all shadow-md hover:shadow-blue-500/40 whitespace-nowrap">
+                      View Room
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

@@ -1,41 +1,28 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { memo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import useSWR from "swr";
 
 import { BACKEND_URL } from "../lib/config";
 
-const RoomDetails = () => {
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
+const RoomDetails = memo(() => {
   const { id } = useParams();
-  const [room, setRoom] = useState(null);
 
-  useEffect(() => {
-    if (!id) return;
+  // Fetch only the specific room instead of all rooms
+  const { data: room, error, isLoading } = useSWR(id ? `${BACKEND_URL}/api/hotels/${id}` : null, fetcher, {
+    revalidateOnFocus: false,
+  });
 
-    const fetchRoom = async () => {
-      try {
-        const res = await fetch(`${BACKEND_URL}/api/hotels`);
-        if (!res.ok) throw new Error("Failed to fetch hotels");
-        const data = await res.json();
-        const foundRoom = data.find(
-          (hotel) => hotel.id.toString() === id
-        );
-        setRoom(foundRoom);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    fetchRoom();
-  }, [id]);
-
-  if (!room) {
+  if (isLoading || !room) {
     return (
-      <div className="min-h-screen flex items-center justify-center pt-24">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-lg font-medium text-gray-600">Loading room details...</p>
+      <div className="min-h-screen flex items-center justify-center pt-24 bg-gradient-to-b from-gray-50 to-white">
+        <div className="text-center flex flex-col items-center">
+          <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <p className="mt-6 text-lg font-bold text-gray-600 animate-pulse">Loading premium details...</p>
         </div>
       </div>
     );
@@ -166,6 +153,6 @@ const RoomDetails = () => {
       </div>
     </div>
   );
-};
+});
 
 export default RoomDetails;
