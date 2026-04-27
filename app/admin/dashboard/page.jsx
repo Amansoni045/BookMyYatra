@@ -15,12 +15,11 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Fetch Analytics
+
     const fetchAnalytics = fetch(`${BACKEND_URL}/api/admin/analytics`, {
       credentials: "include",
     }).then(res => res.json());
 
-    // 2. Fetch Recent Hotels
     const fetchRecent = fetch(`${BACKEND_URL}/api/hotels?limit=5`).then(res => res.json());
 
     Promise.all([fetchAnalytics, fetchRecent])
